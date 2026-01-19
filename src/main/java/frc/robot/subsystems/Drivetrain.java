@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -104,6 +105,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putString("Velocity", swerveDrive.getRobotVelocity().toString());
   }
 
   @Override
@@ -123,6 +125,9 @@ public class Drivetrain extends SubsystemBase {
   }
   private ChassisSpeeds getRobotRelativeSpeeds(){
     return swerveDrive.getRobotVelocity();
+  }
+  public void zeroGyro(){
+    swerveDrive.zeroGyro();
   }
   private double deadzone(double num, double deadband){
     if (Math.abs(num) < deadband)

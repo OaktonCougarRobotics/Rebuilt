@@ -5,13 +5,15 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
 import frc.robot.subsystems.Drivetrain;
 
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -29,10 +31,10 @@ public class RobotContainer {
 
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
-      new File("swerve"),
+      new File(Filesystem.getDeployDirectory(), "swerve"),
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1);
@@ -52,6 +54,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(m_drivetrain.driveCommand());
+
+    navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
+    
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
