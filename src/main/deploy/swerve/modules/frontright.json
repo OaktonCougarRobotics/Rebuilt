@@ -1,0 +1,27 @@
+{
+  "location": {
+    "front": 11.75,
+    "left": -11.75
+  },
+  "absoluteEncoderOffset": 302.6,
+  "drive": {
+    "type": "falcon",
+    "id": 53,
+    "canbus": null
+  },
+  "angle": {
+    "type": "falcon",
+    "id": 52,
+    "canbus": null
+  },
+  "inverted": {
+    "angle": false,
+    "drive": true
+  },
+  "encoder": {
+    "type": "analog",
+    "id": 1,
+    "canbus": null
+  },
+  "absoluteEncoderInverted": false
+}
