@@ -5,10 +5,8 @@
 package frc.robot.subsystems;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -19,8 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import swervelib.SwerveDrive;
@@ -30,7 +27,6 @@ public class Drivetrain extends SubsystemBase {
 
   public SwerveDrive swerveDrive;
 
-  private DoubleSupplier xTranslationSupplier, yTranslationSupplier, thetaTranslationSupplier;
 
    /**
    * Drivetrain Subsystem. Controls movement of robot
@@ -42,14 +38,8 @@ public class Drivetrain extends SubsystemBase {
    * @return nothing
    */
   public Drivetrain(
-          File directory,
-          DoubleSupplier xTranslationSupplier, 
-          DoubleSupplier yTranslationSupplier, 
-          DoubleSupplier thetaTranslationSupplier
+          File directory
     ) {
-      this.xTranslationSupplier = xTranslationSupplier;
-      this.yTranslationSupplier = yTranslationSupplier;
-      this.thetaTranslationSupplier = thetaTranslationSupplier;
     try{
     swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, new Pose2d());
     } catch (Exception e) {
@@ -117,9 +107,6 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putString("Velocity", swerveDrive.getRobotVelocity().toString());
-    SmartDashboard.putNumber("xSpeed", xTranslationSupplier.getAsDouble()*-1);
-    SmartDashboard.putNumber("ypeed", yTranslationSupplier.getAsDouble()*-1);
-    SmartDashboard.putNumber("thetaSpeed", thetaTranslationSupplier.getAsDouble()*-1);
     // System.out.println(((TalonFX)(swerveDrive.getModuleMap().get("frontleft").getDriveMotor().getMotor())));
   }
 

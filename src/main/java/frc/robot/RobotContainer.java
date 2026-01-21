@@ -29,18 +29,18 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain;
   private final Joystick m_joystick = new Joystick(1);
-
+  private final Command driveCommand;
 
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
-      new File(Filesystem.getDeployDirectory(), "swerve"),
+      new File(Filesystem.getDeployDirectory(), "swerve"));
+    driveCommand = new DriveCommand(m_drivetrain,
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1);
-      
     // Configure the trigger bindings
     configureBindings();
   }
@@ -55,11 +55,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_drivetrain.setDefaultCommand(new DriveCommand(m_drivetrain,
-      () -> m_joystick.getRawAxis(1) * -1,
-      () -> m_joystick.getRawAxis(0) * -1,
-      () -> m_joystick.getRawAxis(2) * -1)
-    );
+    m_drivetrain.setDefaultCommand(driveCommand);
+    
 //m_drivetrain.driveCommand()
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     
