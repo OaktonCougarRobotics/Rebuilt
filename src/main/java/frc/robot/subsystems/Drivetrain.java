@@ -28,7 +28,7 @@ import swervelib.parser.SwerveParser;
 
 public class Drivetrain extends SubsystemBase {
 
-  private SwerveDrive swerveDrive;
+  public SwerveDrive swerveDrive;
 
   private DoubleSupplier xTranslationSupplier, yTranslationSupplier, thetaTranslationSupplier;
 
@@ -93,24 +93,24 @@ public class Drivetrain extends SubsystemBase {
    *
    * @return driveCommand
    */
-  public Command driveCommand() {
-    Command d = run(
-        () -> {
-          swerveDrive.driveFieldOriented(new ChassisSpeeds(
-            deadzone(xTranslationSupplier.getAsDouble(),0.05) // x
-              * swerveDrive.getMaximumChassisVelocity(),
-            deadzone(yTranslationSupplier.getAsDouble(),0.05) // y
-              * swerveDrive.getMaximumChassisVelocity(),
-            deadzone(thetaTranslationSupplier.getAsDouble(),0.05) // theta
-              * swerveDrive.getMaximumChassisAngularVelocity()),
-          new Translation2d());
-        });
-  d.addRequirements(this);
-  // HashSet<Subsystem> reqs = new HashSet<>();
-  // reqs.add(this);
-  // d.addRequirements(reqs);
-  return d;
-  }
+  // public Command driveCommand() {
+  //   Command d = run(
+  //       () -> {
+  //         swerveDrive.driveFieldOriented(new ChassisSpeeds(
+  //           deadzone(xTranslationSupplier.getAsDouble(),0.05) // x
+  //             * swerveDrive.getMaximumChassisVelocity(),
+  //           deadzone(yTranslationSupplier.getAsDouble(),0.05) // y
+  //             * swerveDrive.getMaximumChassisVelocity(),
+  //           deadzone(thetaTranslationSupplier.getAsDouble(),0.05) // theta
+  //             * swerveDrive.getMaximumChassisAngularVelocity()),
+  //         new Translation2d());
+  //       });
+  // d.addRequirements(this);
+  // // HashSet<Subsystem> reqs = new HashSet<>();
+  // // reqs.add(this);
+  // // d.addRequirements(reqs);
+  // return d;
+  // }
 
 
   @Override
@@ -120,7 +120,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("xSpeed", xTranslationSupplier.getAsDouble()*-1);
     SmartDashboard.putNumber("ypeed", yTranslationSupplier.getAsDouble()*-1);
     SmartDashboard.putNumber("thetaSpeed", thetaTranslationSupplier.getAsDouble()*-1);
-    System.out.println(((TalonFX)(swerveDrive.getModuleMap().get("frontleft").getDriveMotor().getMotor())).isAlive());
+    // System.out.println(((TalonFX)(swerveDrive.getModuleMap().get("frontleft").getDriveMotor().getMotor())));
   }
 
   @Override

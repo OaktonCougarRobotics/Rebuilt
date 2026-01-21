@@ -5,9 +5,12 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivetrain;
 
 import java.io.File;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -52,7 +55,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_drivetrain.setDefaultCommand(m_drivetrain.driveCommand());
+    m_drivetrain.setDefaultCommand(new DriveCommand(m_drivetrain,
+      () -> m_joystick.getRawAxis(1) * -1,
+      () -> m_joystick.getRawAxis(0) * -1,
+      () -> m_joystick.getRawAxis(2) * -1)
+    );
 //m_drivetrain.driveCommand()
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     
@@ -68,7 +75,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+
+    return new PathPlannerAuto("sigma");
   }
 }
 
