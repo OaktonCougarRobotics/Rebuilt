@@ -8,7 +8,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Drivetrain;
 
 import java.io.File;
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -54,7 +53,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(m_drivetrain.driveCommand());
-
+//m_drivetrain.driveCommand()
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`

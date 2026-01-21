@@ -5,8 +5,10 @@
 package frc.robot.subsystems;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import swervelib.SwerveDrive;
@@ -44,6 +47,9 @@ public class Drivetrain extends SubsystemBase {
           DoubleSupplier yTranslationSupplier, 
           DoubleSupplier thetaTranslationSupplier
     ) {
+      this.xTranslationSupplier = xTranslationSupplier;
+      this.yTranslationSupplier = yTranslationSupplier;
+      this.thetaTranslationSupplier = thetaTranslationSupplier;
     try{
     swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, new Pose2d());
     } catch (Exception e) {
@@ -88,17 +94,22 @@ public class Drivetrain extends SubsystemBase {
    * @return driveCommand
    */
   public Command driveCommand() {
-    return run(
+    Command d = run(
         () -> {
           swerveDrive.driveFieldOriented(new ChassisSpeeds(
             deadzone(xTranslationSupplier.getAsDouble(),0.05) // x
-              * swerveDrive.getMaximumChassisVelocity() * .3,
+              * swerveDrive.getMaximumChassisVelocity(),
             deadzone(yTranslationSupplier.getAsDouble(),0.05) // y
-              * swerveDrive.getMaximumChassisVelocity() * .3,
+              * swerveDrive.getMaximumChassisVelocity(),
             deadzone(thetaTranslationSupplier.getAsDouble(),0.05) // theta
-              * swerveDrive.getMaximumChassisAngularVelocity()* .3),
+              * swerveDrive.getMaximumChassisAngularVelocity()),
           new Translation2d());
         });
+  d.addRequirements(this);
+  // HashSet<Subsystem> reqs = new HashSet<>();
+  // reqs.add(this);
+  // d.addRequirements(reqs);
+  return d;
   }
 
 
@@ -106,6 +117,10 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putString("Velocity", swerveDrive.getRobotVelocity().toString());
+    SmartDashboard.putNumber("xSpeed", xTranslationSupplier.getAsDouble()*-1);
+    SmartDashboard.putNumber("ypeed", yTranslationSupplier.getAsDouble()*-1);
+    SmartDashboard.putNumber("thetaSpeed", thetaTranslationSupplier.getAsDouble()*-1);
+    System.out.println(((TalonFX)(swerveDrive.getModuleMap().get("frontleft").getDriveMotor().getMotor())).isAlive());
   }
 
   @Override
