@@ -10,10 +10,14 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.io.File;
 
+import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonVersion;
+
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -74,6 +78,9 @@ public class RobotContainer {
     // An example command will be run in autonomous
 
     return new PathPlannerAuto("sigma");
+  }
+  public void disabledPeriodic(){
+    
   }
 }
 
