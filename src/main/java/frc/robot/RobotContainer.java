@@ -10,10 +10,14 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.io.File;
 
+import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonVersion;
+
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,20 +31,27 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  public RobotState robotState = RobotState.NEUTRAL;
   private final Drivetrain m_drivetrain;
   private final Joystick m_joystick = new Joystick(1);
   private final Command driveCommand;
-
+  
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
+  private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
       new File(Filesystem.getDeployDirectory(), "swerve"));
-    driveCommand = new DriveCommand(m_drivetrain,
+    driveCommand = new DriveCommand(
+      m_drivetrain,
+      () -> robotState,
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
-      () -> m_joystick.getRawAxis(2) * -1);
+      () -> m_joystick.getRawAxis(2) * -1,
+      0,
+      0,
+      0);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -59,7 +70,8 @@ public class RobotContainer {
     
 //m_drivetrain.driveCommand()
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
-    
+    alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.OUTTAKE));
+    alignTrigger.onFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
@@ -75,10 +87,13 @@ public class RobotContainer {
 
     return new PathPlannerAuto("sigma");
   }
+  public void disabledPeriodic(){
+    
+  }
+  public enum RobotState{
+    NEUTRAL,
+    INTAKE,
+    OUTTAKE
+  }
 }
 
-enum RobotState{
-  NEUTRAL,
-  INTAKE,
-  OUTTAKE
-}
