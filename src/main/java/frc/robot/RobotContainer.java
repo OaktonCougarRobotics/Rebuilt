@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision;
 
 import java.io.File;
 
@@ -15,6 +16,8 @@ import org.photonvision.PhotonVersion;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,7 +52,7 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1,
-      0,
+    1.0,
       0,
       0);
     // Configure the trigger bindings
@@ -88,7 +91,18 @@ public class RobotContainer {
     return new PathPlannerAuto("sigma");
   }
   public void disabledPeriodic(){
-    
+    Pose2d a = null;// Vision.getEstimatedPosition();
+    if(a!=null){
+      SmartDashboard.putNumber("x", a.getX());
+      SmartDashboard.putNumber("y", a.getY());
+    }
+  }
+  public void periodic(){
+    Pose2d a = null;//Vision.getEstimatedPosition();
+    if(a!=null){
+      SmartDashboard.putNumber("x", a.getX());
+      SmartDashboard.putNumber("y", a.getY());
+    }
   }
   public enum RobotState{
     NEUTRAL,

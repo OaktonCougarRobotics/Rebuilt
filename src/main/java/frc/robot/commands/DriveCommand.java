@@ -6,15 +6,15 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Constants;
-import frc.robot.RobotContainer.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants;
+import frc.robot.RobotContainer.RobotState;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision;
 
 public class DriveCommand extends Command{
      
@@ -64,8 +64,9 @@ public class DriveCommand extends Command{
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisVelocity(),
 
-            (stateSupplier.get().equals(RobotState.OUTTAKE)?
-              thetaController.calculate(angleError(visionObtainedPose() ),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
+            (stateSupplier.get()==RobotState.OUTTAKE?
+            
+              thetaController.calculate(angleError(Vision.getEstimatedPosition()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
 ),
           new Translation2d());
@@ -108,6 +109,14 @@ public class DriveCommand extends Command{
       double y = robotPose.getY() - hub.getY();
       double difference =  robotPose.getRotation().getDegrees() - Math.toDegrees(Math.atan(y/x));
       return difference + (isRed?0:180);
+  }
+    public static Translation2d cameraToCenter(Pose2d cameraPose){
+      double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
+      double theta = cameraPose.getRotation().getRadians();
+      double y = h * Math.cos(theta);
+      double x = h * Math.sin(theta);
+      Translation2d center = new Translation2d(x, y);
+      return center;
   }
 
 }
