@@ -10,6 +10,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonVersion;
@@ -41,7 +42,16 @@ public class RobotContainer {
   
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
-
+  public Supplier<Pose2d> echoVisionMeasurements = () -> {
+    // GET Pose2d
+    // SmartDashboard.putNumber
+        Pose2d a = Vision.getEstimatedPosition();
+        if(a!=null){
+          SmartDashboard.putNumber("vision x", a.getX());
+          SmartDashboard.putNumber("vision y", a.getY());
+        }
+        return a;
+  };
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
@@ -52,6 +62,7 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1,
+      echoVisionMeasurements,
     1.0,
       0,
       0);
@@ -91,18 +102,8 @@ public class RobotContainer {
     return new PathPlannerAuto("sigma");
   }
   public void disabledPeriodic(){
-    Pose2d a = null;// Vision.getEstimatedPosition();
-    if(a!=null){
-      SmartDashboard.putNumber("x", a.getX());
-      SmartDashboard.putNumber("y", a.getY());
-    }
   }
   public void periodic(){
-    Pose2d a = null;//Vision.getEstimatedPosition();
-    if(a!=null){
-      SmartDashboard.putNumber("x", a.getX());
-      SmartDashboard.putNumber("y", a.getY());
-    }
   }
   public enum RobotState{
     NEUTRAL,

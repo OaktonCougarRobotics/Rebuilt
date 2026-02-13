@@ -24,24 +24,16 @@ public final class Vision {
      // Robot-relative position of camera
      public static final Transform3d kRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
 
-     public static PhotonPoseEstimator photonEstimator= new PhotonPoseEstimator(kTagLayout, kRobotToCam);
+     public static PhotonPoseEstimator poseEstimator= new PhotonPoseEstimator(kTagLayout, kRobotToCam);
 
     
     private Vision(){}
     //janky method only works properly when there is one apriltag
     public static Pose2d getEstimatedPosition(){
-
-        List<PhotonPipelineResult> results= camera.getAllUnreadResults();
-        for(var result : results){
-            var multiTagResult = result.getMultiTagResult();
-            if(multiTagResult.isPresent()){
-                Translation3d trans =  multiTagResult.get().estimatedPose.best.getTranslation();
-                Rotation3d rot =  multiTagResult.get().estimatedPose.best.getRotation();
-                return new Pose2d(trans.getX(),trans.getY(),new Rotation2d(rot.getMeasureAngle()));
-            }
-        }
-        throw new RuntimeException("no results found!");
+        return null;
     }
-
+    public void periodic(){
+        // poseEstimator.estimateCoprocMultiTagPose(camera.)
+    }
 
 }

@@ -24,6 +24,7 @@ public class DriveCommand extends Command{
     private DoubleSupplier thetaTranslationSupplier;
     private PIDController thetaController;
     private Supplier<RobotState> stateSupplier;
+    private Supplier<Pose2d> poseSupplier;
     /**
      * Constructs a DriveCommand command
      * 
@@ -37,6 +38,7 @@ public class DriveCommand extends Command{
                         DoubleSupplier xTranslationSupplier, 
                         DoubleSupplier yTranslationSupplier, 
                         DoubleSupplier thetaTranslationSupplier, 
+                        Supplier<Pose2d> getPose,
                         double kP,  
                         double kI, 
                         double kD
@@ -48,6 +50,7 @@ public class DriveCommand extends Command{
         this.yTranslationSupplier = yTranslationSupplier;
         this.thetaTranslationSupplier = thetaTranslationSupplier;
         this.thetaController = new PIDController(kP, kI, kD);
+        this.poseSupplier = getPose;
         
     }
     @Override
@@ -64,10 +67,11 @@ public class DriveCommand extends Command{
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisVelocity(),
 
-            (stateSupplier.get()==RobotState.OUTTAKE?
+            // (stateSupplier.get()==RobotState.OUTTAKE?
             
-              thetaController.calculate(angleError(Vision.getEstimatedPosition()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
-              * drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
+            //   thetaController.calculate(angleError(poseSupplier.get()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
+            deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
+              * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
 ),
           new Translation2d());
     }
