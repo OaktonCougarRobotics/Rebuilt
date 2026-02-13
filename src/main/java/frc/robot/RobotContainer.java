@@ -102,29 +102,8 @@ public class RobotContainer {
     return new PathPlannerAuto("sigma");
   }
   public void disabledPeriodic(){
-<<<<<<< HEAD
   }
   public void periodic(){
-=======
-    Vision.getEstimatedPosition().ifPresent(pose -> {
-      SmartDashboard.putNumber("x", pose.getX());
-      SmartDashboard.putNumber("y", pose.getY());
-    });
-
-    Pose2d a;
-
-    // if(a!=null){
-    //   SmartDashboard.putNumber("x", a.getX());
-    //   SmartDashboard.putNumber("y", a.getY());
-    // }
-  }
-  public void periodic(){
-    // Pose2d a = null;//Vision.getEstimatedPosition();
-    // if(a!=null){
-    //   SmartDashboard.putNumber("x", a.getX());
-    //   SmartDashboard.putNumber("y", a.getY());
-    // }
->>>>>>> 94d356af26bf9f041b2a20edffb3e7187662c4d3
   }
   public enum RobotState{
     NEUTRAL,
