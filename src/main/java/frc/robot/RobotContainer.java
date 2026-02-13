@@ -10,10 +10,12 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonVersion;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -101,8 +103,28 @@ public class RobotContainer {
 
     return new PathPlannerAuto("sigma");
   }
+  int n, nSpecial;
+  double avg, avgSpecial;
+  double lastReading;
   public void disabledPeriodic(){
-  }
+    List<PhotonPipelineResult> x = Vision.getCamera().getAllUnreadResults();
+    if(x.size()>=2){
+      // for(int i = 0;i<x.size();++i){
+      //   System.out.println("*********************************************");
+      //   System.out.println(x.get(i).getTimestampSeconds());      
+        avgSpecial = avgSpecial/(nSpecial+1) + (x.get(1).getTimestampSeconds()-x.get(0).getTimestampSeconds())/(nSpecial+1);
+        nSpecial++;
+        // lastReading = x.get(1).getTimestampSeconds();
+      }    //normal avg here
+    if(x.size()>=1){
+    avg = avg/(n+1) + (x.get(0).getTimestampSeconds()-lastReading)/(n+1);
+    n++;
+    }
+    SmartDashboard.putNumber("Average Result Interval", avg);
+    SmartDashboard.putNumber("N>=2 average time interval", nSpecial);
+    }
+
+
   public void periodic(){
   }
   public enum RobotState{

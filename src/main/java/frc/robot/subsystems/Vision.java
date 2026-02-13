@@ -37,4 +37,8 @@ public final class Vision {
         // poseEstimator.estimateCoprocMultiTagPose(camera.)
     }
 
+    public static PhotonCamera getCamera() {
+        return camera;
+    }
+
 }

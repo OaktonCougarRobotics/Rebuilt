@@ -136,4 +136,25 @@ public class Drivetrain extends SubsystemBase {
       return 0.0;
     return num;
   }
+  /*
+  Returns true if updated, false otherwise */
+  private boolean updateVision() {
+    var results = Vision.getCamera().getAllUnreadResults();
+
+    if (results.size() > 0) {
+      // for (var result: results) {
+      //   var multiTagResult = result.getMultiTagResult();
+      //   if (multiTagResult.i)
+      // }
+
+      double timeStamp = results.get(0).getTimestampSeconds();
+      results.get(0).getBestTarget();
+
+      var result = results.get(results.size() - 1);
+      //var fieldToCamera = 
+      return true;
+    }
+
+    return false;
+  }
 }
