@@ -69,9 +69,14 @@ public class DriveCommand extends Command{
 
             // (stateSupplier.get()==RobotState.OUTTAKE?
             
+<<<<<<< HEAD
             //   thetaController.calculate(angleError(poseSupplier.get()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
             deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
+=======
+              thetaController.calculate(angleError(Vision.getEstimatedPosition().get()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
+              * drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
+>>>>>>> 94d356af26bf9f041b2a20edffb3e7187662c4d3
 ),
           new Translation2d());
     }

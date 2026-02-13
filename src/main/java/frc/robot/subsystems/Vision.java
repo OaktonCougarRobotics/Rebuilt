@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -29,6 +30,7 @@ public final class Vision {
     
     private Vision(){}
     //janky method only works properly when there is one apriltag
+<<<<<<< HEAD
     public static Pose2d getEstimatedPosition(){
         return null;
     }
@@ -36,4 +38,20 @@ public final class Vision {
         // poseEstimator.estimateCoprocMultiTagPose(camera.)
     }
 
+=======
+    public static Optional<Pose2d> getEstimatedPosition(){
+
+        List<PhotonPipelineResult> results= camera.getAllUnreadResults();
+        for(var result : results){
+            var multiTagResult = result.getMultiTagResult();
+            if(multiTagResult.isPresent()){
+                Translation3d trans =  multiTagResult.get().estimatedPose.best.getTranslation();
+                Rotation3d rot =  multiTagResult.get().estimatedPose.best.getRotation();
+                return Optional.of(new Pose2d(trans.getX(), trans.getY(), new Rotation2d(rot.getMeasureAngle())));
+            }
+        }
+        return Optional.empty();
+        // throw new RuntimeException("no results found!");
+    }
+>>>>>>> 94d356af26bf9f041b2a20edffb3e7187662c4d3
 }
