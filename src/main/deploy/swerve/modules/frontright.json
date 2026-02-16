@@ -5,13 +5,13 @@
   },
   "absoluteEncoderOffset": 302.6,
   "drive": {
-    "type": "falcon",
-    "id": 53,
+    "type": "krakenx60",
+    "id": 4,
     "canbus": null
   },
   "angle": {
     "type": "falcon",
-    "id": 52,
+    "id": 59,
     "canbus": null
   },
   "inverted": {
