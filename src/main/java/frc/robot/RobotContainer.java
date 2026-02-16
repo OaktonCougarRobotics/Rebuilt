@@ -7,8 +7,10 @@ package frc.robot;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
+import swervelib.SwerveModule;
 
 import java.io.File;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.photonvision.PhotonUtils;
@@ -100,8 +102,20 @@ public class RobotContainer {
     return new PathPlannerAuto("sigma");
   }
   public void disabledPeriodic(){
+    // Map<String, SwerveModule> x = m_drivetrain.swerveDrive.getModuleMap();
+
+    // SmartDashboard.putNumber("Frontleft angle", x.get("frontleft").getRawAbsolutePosition());
+    // SmartDashboard.putNumber("FrontRight angle", x.get("frontright").getRawAbsolutePosition());
+    // SmartDashboard.putNumber("Backleft angle", x.get("backleft").getRawAbsolutePosition());
+    // SmartDashboard.putNumber("BackRight angle", x.get("backright").getRawAbsolutePosition());
   }
   public void periodic(){
+    // Map<String, SwerveModule> x = m_drivetrain.swerveDrive.getModuleMap();
+    // SmartDashboard.putNumber("Frontleft angle", x.get("frontleft").getRawAbsolutePosition());
+    // SmartDashboard.putNumber("FrontRight angle", x.get("frontright").getRawAbsolutePosition());
+    // SmartDashboard.putNumber("Backleft angle", x.get("").getRawAbsolutePosition());
+    // SmartDashboard.putNumber("BackRight angle", x.get("backright").getRawAbsolutePosition());
+
   }
   public enum RobotState{
     NEUTRAL,

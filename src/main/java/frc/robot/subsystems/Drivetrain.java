@@ -46,6 +46,7 @@ public class Drivetrain extends SubsystemBase {
       e.printStackTrace();
       throw new RuntimeException("File failed to be loaded");
     }
+
     configureAuto();
       }
         
@@ -106,7 +107,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putString("Velocity", swerveDrive.getRobotVelocity().toString());
+    // SmartDashboard.putString("Velocity", swerveDrive.getRobotVelocity().toString());
     // System.out.println(((TalonFX)(swerveDrive.getModuleMap().get("frontleft").getDriveMotor().getMotor())));
   }
 
