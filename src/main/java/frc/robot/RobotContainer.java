@@ -86,26 +86,10 @@ public class RobotContainer {
     return new PathPlannerAuto("sigma");
   }
   public void disabledPeriodic(){
-    // Map<String, SwerveModule> x = m_drivetrain.swerveDrive.getModuleMap();
-
-    // SmartDashboard.putNumber("Frontleft angle", x.get("frontleft").getRawAbsolutePosition());
-    // SmartDashboard.putNumber("FrontRight angle", x.get("frontright").getRawAbsolutePosition());
-    // SmartDashboard.putNumber("Backleft angle", x.get("backleft").getRawAbsolutePosition());
-    // SmartDashboard.putNumber("BackRight angle", x.get("backright").getRawAbsolutePosition());
+    //Implement as required
   }
   public void periodic(){
     System.out.println(m_drivetrain.swerveDrive.getPose());
-    // Map<String, SwerveModule> x = m_drivetrain.swerveDrive.getModuleMap();
-    // SmartDashboard.putNumber("Frontleft angle", x.get("frontleft").getRawAbsolutePosition());
-    // SmartDashboard.putData("OFFSET TESTING", new Sendable(){
-    //   public void initSendable(SendableBuilder builder){
-    //     builder.addDoubleProperty("frontrightabsolute", () ->x.get("frontright").getRawAbsolutePosition(),null);
-    //   }
-    // });
-    // System.out.println(x.get("frontright").getRawAbsolutePosition());
-    // System.out.println(x.get("frontright").getAbsoluteEncoder().getAbsolutePosition());
-    // SmartDashboard.putNumber("BackRight angle", x.get("backright").getRawAbsolutePosition());
-
   }
   public enum RobotState{
     NEUTRAL,

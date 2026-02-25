@@ -16,9 +16,6 @@ public final class Vision extends SubsystemBase {
         ardu = new Camera("Arducam623", new Transform3d(0.301625, 0.1397, 0.1524, new Rotation3d(0,Math.toRadians(24.7),Math.toRadians(16.7))));
         this.updateDrivetrain = updateDrivetrain;
     }
-    public static VisionReading estimatePose(){
-        return null;
-    }
     public void periodic(){
         for(VisionReading reading: shutter.estimatePose())
             updateDrivetrain.accept(reading.getPose2d(), reading.getTimestampSeconds());
