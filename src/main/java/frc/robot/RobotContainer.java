@@ -65,14 +65,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(driveCommand);
-    
-//m_drivetrain.driveCommand()
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.OUTTAKE));
     alignTrigger.onFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
   }
 
   /**

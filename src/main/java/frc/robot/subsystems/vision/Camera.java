@@ -25,7 +25,11 @@ public class Camera extends SubsystemBase{
         this.cam = new PhotonCamera(name);
         this.poseEstimator = new PhotonPoseEstimator(Constants.kTagLayout, kRobotToCam);
     }
-    public List<VisionReading> estimatePose() {
+    /** 
+     *  
+     * @return a {@link List<VisionReading>} of all the different readings taken by the camera at a specific instance in time
+     */
+    List<VisionReading> estimatePose() {
         List<PhotonPipelineResult> results = cam.getAllUnreadResults();
         List<VisionReading> readings = new ArrayList<>();
         for(PhotonPipelineResult res: results){
@@ -38,9 +42,15 @@ public class Camera extends SubsystemBase{
         return readings;
     }
     @Override
+    /** 
+     * Periodically calls the estimatePose() method, ensuring constant updating of odometry.
+     */
     public void periodic(){
     estimatePose();
     }
+    /** 
+     * @return boolean value representing whether the camera is connected (i.e. the camera is sending data).
+     */
     public boolean isConnected(){
         return cam.isConnected();
     }
