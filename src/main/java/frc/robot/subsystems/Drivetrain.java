@@ -46,7 +46,7 @@ public class Drivetrain extends SubsystemBase {
       e.printStackTrace();
       throw new RuntimeException("File failed to be loaded");
     }
-
+    swerveDrive.getModuleMap().get("frontright").setAngle(0);
     configureAuto();
       }
         
@@ -109,6 +109,7 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
     // SmartDashboard.putString("Velocity", swerveDrive.getRobotVelocity().toString());
     // System.out.println(((TalonFX)(swerveDrive.getModuleMap().get("frontleft").getDriveMotor().getMotor())));
+    SmartDashboard.putNumber("offset", swerveDrive.getModuleMap().get("frontright").getRawAbsolutePosition());
   }
 
   @Override
@@ -132,30 +133,30 @@ public class Drivetrain extends SubsystemBase {
   public void zeroGyro(){
     swerveDrive.zeroGyro();
   }
-  private double deadzone(double num, double deadband){
-    if (Math.abs(num) < deadband)
-      return 0.0;
-    return num;
-  }
+  // private double deadzone(double num, double deadband){
+  //   if (Math.abs(num) < deadband)
+  //     return 0.0;
+  //   return num;
+  // }
   /*
   Returns true if updated, false otherwise */
-  private boolean updateVision() {
-    var results = Vision.getCamera().getAllUnreadResults();
+  // private boolean updateVision() {
+    // var results = Vision.getCamera().getAllUnreadResults();
 
-    if (results.size() > 0) {
+    // if (results.size() > 0) {
       // for (var result: results) {
       //   var multiTagResult = result.getMultiTagResult();
       //   if (multiTagResult.i)
       // }
 
-      double timeStamp = results.get(0).getTimestampSeconds();
-      results.get(0).getBestTarget();
+      // double timeStamp = results.get(0).getTimestampSeconds();
+      // results.get(0).getBestTarget();
 
-      var result = results.get(results.size() - 1);
+      // var result = results.get(results.size() - 1);
       //var fieldToCamera = 
-      return true;
-    }
+      // return true;
+    // }
 
-    return false;
-  }
+    // return false;
+  // }
 }

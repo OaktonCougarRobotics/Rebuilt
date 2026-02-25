@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Translation2d;
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -22,6 +25,6 @@ public final class Constants {
 public static final double MAX_SPEED = 6.0;
 public static Translation2d redHub = new Translation2d(468.56, 58.32);
 public static Translation2d blueHub = new Translation2d(181.56,158.32);
-public static double robotToCameraX = 0.0;
-public static double robotToCameraY = 0.0;
+public static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
 }

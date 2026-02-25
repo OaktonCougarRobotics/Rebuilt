@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.RobotContainer.RobotState;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.vision.Vision;
 
 public class DriveCommand extends Command{
      
@@ -114,12 +114,13 @@ public class DriveCommand extends Command{
       return difference + (isRed?0:180);
   }
     public static Translation2d cameraToCenter(Pose2d cameraPose){
-      double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
-      double theta = cameraPose.getRotation().getRadians();
-      double y = h * Math.cos(theta);
-      double x = h * Math.sin(theta);
-      Translation2d center = new Translation2d(x, y);
-      return center;
+      // double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
+      // double theta = cameraPose.getRotation().getRadians();
+      // double y = h * Math.cos(theta);
+      // double x = h * Math.sin(theta);
+      // Translation2d center = new Translation2d(x, y);
+      // return center;
+      return null;
   }
 
 }

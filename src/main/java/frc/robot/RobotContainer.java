@@ -6,22 +6,15 @@ package frc.robot;
 
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Vision;
-import swervelib.SwerveModule;
+import frc.robot.subsystems.vision.Vision;
 
 import java.io.File;
-import java.util.Map;
-import java.util.function.Supplier;
 
-import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -37,32 +30,23 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public RobotState robotState = RobotState.NEUTRAL;
   private final Drivetrain m_drivetrain;
+  private final Vision m_vision;
   private final Joystick m_joystick = new Joystick(1);
   private final Command driveCommand;
-  
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
-  public Supplier<Pose2d> echoVisionMeasurements = () -> {
-    // GET Pose2d
-    // SmartDashboard.putNumber
-        Pose2d a = Vision.getEstimatedPosition();
-        if(a!=null){
-          SmartDashboard.putNumber("vision x", a.getX());
-          SmartDashboard.putNumber("vision y", a.getY());
-        }
-        return a;
-  };
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
       new File(Filesystem.getDeployDirectory(), "swerve"));
+      m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement);
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1,
-      echoVisionMeasurements,
+      null,//replace to getVisionWorking
     1.0,
       0,
       0);
@@ -110,10 +94,16 @@ public class RobotContainer {
     // SmartDashboard.putNumber("BackRight angle", x.get("backright").getRawAbsolutePosition());
   }
   public void periodic(){
+    System.out.println(m_drivetrain.swerveDrive.getPose());
     // Map<String, SwerveModule> x = m_drivetrain.swerveDrive.getModuleMap();
     // SmartDashboard.putNumber("Frontleft angle", x.get("frontleft").getRawAbsolutePosition());
-    // SmartDashboard.putNumber("FrontRight angle", x.get("frontright").getRawAbsolutePosition());
-    // SmartDashboard.putNumber("Backleft angle", x.get("").getRawAbsolutePosition());
+    // SmartDashboard.putData("OFFSET TESTING", new Sendable(){
+    //   public void initSendable(SendableBuilder builder){
+    //     builder.addDoubleProperty("frontrightabsolute", () ->x.get("frontright").getRawAbsolutePosition(),null);
+    //   }
+    // });
+    // System.out.println(x.get("frontright").getRawAbsolutePosition());
+    // System.out.println(x.get("frontright").getAbsoluteEncoder().getAbsolutePosition());
     // SmartDashboard.putNumber("BackRight angle", x.get("backright").getRawAbsolutePosition());
 
   }
