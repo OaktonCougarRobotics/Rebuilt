@@ -110,6 +110,7 @@ public class Drivetrain extends SubsystemBase {
       double angleToHub = Math.atan2(y-Constants.blueHub.getY(), x-Constants.blueHub.getX()) % 360;// add test case for right above/under when x=0
 
       double error = currentAngle - angleToHub;
+      error = -1 * ((error + 180) % 360);
       return error;
     }
 
