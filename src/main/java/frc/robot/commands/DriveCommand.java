@@ -110,10 +110,12 @@ public class DriveCommand extends Command{
       Translation2d hub = (isRed?Constants.redHub:Constants.blueHub);
       double x = robotPose.getX() - hub.getX();
       double y = robotPose.getY() - hub.getY();
-      double difference =  robotPose.getRotation().getDegrees() - Math.toDegrees(Math.atan(y/x));
-      System.out.println(difference + (isRed?0:180));
-      return difference + (isRed?0:180);
-      
+      double theta = Math.toDegrees(Math.atan(y/x));
+      double alpha =  robotPose.getRotation().getDegrees() - 180;
+      double difference = theta - alpha;
+      System.out.println(difference /*+ (isRed?0:180)*/);
+      return difference;
+
   }
     // public static Translation2d cameraToCenter(Pose2d cameraPose){
     //   // double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
