@@ -67,7 +67,7 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(driveCommand);
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.OUTTAKE));
-    alignTrigger.onFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
+    alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
   }
 
   /**
@@ -84,7 +84,7 @@ public class RobotContainer {
     //Implement as required
   }
   public void periodic(){
-    System.out.println(m_drivetrain.swerveDrive.getPose());
+    // System.out.println(m_drivetrain.swerveDrive.getPose());
   }
   public enum RobotState{
     NEUTRAL,

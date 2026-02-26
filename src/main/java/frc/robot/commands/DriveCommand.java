@@ -67,12 +67,12 @@ public class DriveCommand extends Command{
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisVelocity(),
 
-            // (stateSupplier.get()==RobotState.OUTTAKE?
+            (stateSupplier.get()==RobotState.OUTTAKE?
             
-              // thetaController.calculate(angleError(Vision.getEstimatedPosition().get()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05)
-             deadzone(thetaTranslationSupplier.getAsDouble(), 0.05) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
-),
-          new Translation2d());
+              thetaController.calculate(angleError(drivetrain.swerveDrive.getPose()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
+            )),
+          new Translation2d()
+        );
     }
     @Override
     public void end(boolean interrupted){
@@ -111,16 +111,18 @@ public class DriveCommand extends Command{
       double x = robotPose.getX() - hub.getX();
       double y = robotPose.getY() - hub.getY();
       double difference =  robotPose.getRotation().getDegrees() - Math.toDegrees(Math.atan(y/x));
+      System.out.println(difference + (isRed?0:180));
       return difference + (isRed?0:180);
+      
   }
-    public static Translation2d cameraToCenter(Pose2d cameraPose){
-      // double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
-      // double theta = cameraPose.getRotation().getRadians();
-      // double y = h * Math.cos(theta);
-      // double x = h * Math.sin(theta);
-      // Translation2d center = new Translation2d(x, y);
-      // return center;
-      return null;
-  }
+    // public static Translation2d cameraToCenter(Pose2d cameraPose){
+    //   // double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
+    //   // double theta = cameraPose.getRotation().getRadians();
+    //   // double y = h * Math.cos(theta);
+    //   // double x = h * Math.sin(theta);
+    //   // Translation2d center = new Translation2d(x, y);
+    //   // return center;
+    //   return null;
+  // }
 
 }
