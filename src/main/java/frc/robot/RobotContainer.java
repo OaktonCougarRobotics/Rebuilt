@@ -58,7 +58,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
-      stream.filter(auto -> auto.getName().startsWith("comp")):stream);
+      stream.filter(auto -> auto.getName().startsWith("")):stream);
     SmartDashboard.putData("Auto Chooser", autoChooser);;
   }
 
