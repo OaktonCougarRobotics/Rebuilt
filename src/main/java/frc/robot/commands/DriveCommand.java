@@ -113,18 +113,12 @@ public class DriveCommand extends Command{
       double theta = Math.toDegrees(Math.atan(y/x));
       double alpha =  robotPose.getRotation().getDegrees() - 180;
       double difference = theta - alpha;
-      System.out.println(difference /*+ (isRed?0:180)*/);
+      // System.out.println(difference /*+ (isRed?0:180)*/);
       return difference;
 
   }
-    // public static Translation2d cameraToCenter(Pose2d cameraPose){
-    //   // double h = Math.sqrt(Math.pow(Constants.robotToCameraX, 2)+Math.pow(Constants.robotToCameraX, 2));
-    //   // double theta = cameraPose.getRotation().getRadians();
-    //   // double y = h * Math.cos(theta);
-    //   // double x = h * Math.sin(theta);
-    //   // Translation2d center = new Translation2d(x, y);
-    //   // return center;
-    //   return null;
-  // }
+  
+
+
 
 }

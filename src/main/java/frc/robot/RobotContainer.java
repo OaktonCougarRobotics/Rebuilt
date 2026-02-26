@@ -10,11 +10,14 @@ import frc.robot.subsystems.vision.Vision;
 
 import java.io.File;
 
-
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,6 +38,8 @@ public class RobotContainer {
   private final Command driveCommand;
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
+
+  private SendableChooser<Command> autoChooser;
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
@@ -47,11 +52,14 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1,
       null,//replace to getVisionWorking
-    1.0,
+    .10,
       0,
       0);
     // Configure the trigger bindings
     configureBindings();
+    autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
+      stream.filter(auto -> auto.getName().startsWith("comp")):stream);
+    SmartDashboard.putData("Auto Chooser", autoChooser);;
   }
 
   /**
@@ -78,13 +86,14 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
 
-    return new PathPlannerAuto("sigma");
+    return autoChooser.getSelected();
   }
   public void disabledPeriodic(){
     //Implement as required
   }
   public void periodic(){
     // System.out.println(m_drivetrain.swerveDrive.getPose());
+    System.out.println((m_drivetrain.orientationError()));
   }
   public enum RobotState{
     NEUTRAL,
