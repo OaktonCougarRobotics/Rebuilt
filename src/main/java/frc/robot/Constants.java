@@ -24,7 +24,7 @@ public final class Constants {
 
 public static final double MAX_SPEED = 6.0;
 //need to be in meters
-public static Translation2d redHub = new Translation2d(11.901, 1.481);
+public static Translation2d redHub = new Translation2d(11.901, 4.021);
 public static Translation2d blueHub = new Translation2d(4.6116,4.021);
 
 public static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);

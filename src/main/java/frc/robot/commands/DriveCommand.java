@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.ejml.dense.row.linsol.qr.SolvePseudoInverseQrp_DDRM;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -69,7 +71,7 @@ public class DriveCommand extends Command{
 
             (stateSupplier.get()==RobotState.OUTTAKE?
             
-              thetaController.calculate(angleError(drivetrain.swerveDrive.getPose()),0):deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
+              echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
             )),
           new Translation2d()
         );
@@ -83,7 +85,13 @@ public class DriveCommand extends Command{
         
         return false;
     }
-
+    public double echo(){
+      double a = drivetrain.orientationError();
+      System.out.println("angle error: "+a);
+      double x = thetaController.calculate(a,0);
+      System.out.println("Calculated output: "+ x);
+      return x;
+    }
     @Override
     public boolean runsWhenDisabled(){
         return false;
@@ -100,25 +108,4 @@ public class DriveCommand extends Command{
           return 0.0;
         return num;
       }
-    /**
-     * Returns angle error from bot to the hub (reality-expected)
-     * 
-     * @param Pose2d {@link Pose2d Pose2d} representing the robot's position
-     */
-    public static double angleError(Pose2d robotPose){
-      boolean isRed = DriverStation.getAlliance().get()==DriverStation.Alliance.Red;
-      Translation2d hub = (isRed?Constants.redHub:Constants.blueHub);
-      double x = robotPose.getX() - hub.getX();
-      double y = robotPose.getY() - hub.getY();
-      double theta = Math.toDegrees(Math.atan(y/x));
-      double alpha =  robotPose.getRotation().getDegrees() - 180;
-      double difference = theta - alpha;
-      // System.out.println(difference /*+ (isRed?0:180)*/);
-      return difference;
-
-  }
-  
-
-
-
-}
+ }

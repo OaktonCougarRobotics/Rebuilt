@@ -16,6 +16,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,12 +49,12 @@ public class RobotContainer {
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> m_joystick.getRawAxis(1) * -1,
-      () -> m_joystick.getRawAxis(0) * -1,
+      () -> m_joystick.getRawAxis(1) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
+      () -> m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(2) * -1,
       null,//replace to getVisionWorking
-    .10,
-      0,
+    .12,
+      0.2526,
       0);
     // Configure the trigger bindings
     configureBindings();
@@ -93,7 +94,10 @@ public class RobotContainer {
   }
   public void periodic(){
     // System.out.println(m_drivetrain.swerveDrive.getPose());
-    System.out.println((m_drivetrain.orientationError()));
+    // System.out.println(m_drivetrain.orientationError());
+    System.out.println("Angle: " + m_drivetrain.hubAngle());
+    // System.out.println("X: " + m_drivetrain.swerveDrive.getPose().getX());
+    // System.out.println("Y: " + m_drivetrain.swerveDrive.getPose().getY());
   }
   public enum RobotState{
     NEUTRAL,
