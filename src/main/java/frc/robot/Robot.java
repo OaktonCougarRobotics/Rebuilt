@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,14 +26,17 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     m_robotContainer = new RobotContainer();
+
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
     // CameraServer.startAutomaticCapture();
 
-    addPeriodic(()->{
-      if(m_robotContainer.robotState.equals(RobotState.OUTTAKE)){
-        //PID STUFF HERE
-      }
-    }
-    , .005, .005);
+    // addPeriodic(()->{
+    //   // if(m_robotContainer.robotState.equals(RobotState.OUTTAKE)){
+    //   //   m_robotContainer.driveCommand.execute();
+    //   }
+    // }
+    // , .005, .005);
     // //Advantagekit initialization no line of code comes before this
     // Logger.recordMetadata("ProjectName", "Rebuilt"); // Set a metadata value
     // if (isReal()) {
@@ -78,7 +83,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.resetPose();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

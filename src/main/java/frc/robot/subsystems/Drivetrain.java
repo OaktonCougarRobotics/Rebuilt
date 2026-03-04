@@ -88,7 +88,9 @@ public class Drivetrain extends SubsystemBase {
   public double distance(){
     Pose2d currentPose = swerveDrive.getPose();
     double x = currentPose.getX();
+    SmartDashboard.putNumber("botx", x);
     double y = currentPose.getY();
+    SmartDashboard.putNumber("boty", y);
     if(DriverStation.getAlliance().get()==Alliance.Blue)
         return Math.sqrt(Math.pow((x-Constants.blueHub.getX()),2) + Math.pow((y-Constants.blueHub.getY()),2));
     else
@@ -107,7 +109,7 @@ public class Drivetrain extends SubsystemBase {
       double x = currentPose.getX();
       double y = currentPose.getY();
       double currentAngle = currentPose.getRotation().getDegrees() % 360;//fr
-      double angleToHub = Math.toDegrees(Math.atan((y-Constants.redHub.getY())/(x-Constants.redHub.getX())) % 360);// add test case for right above/under when x=0
+      double angleToHub = Math.toDegrees(Math.atan((y-Constants.redHub.getY())/Math.abs(x-Constants.redHub.getX())) % 360);// add test case for right above/under when x=0
 
       double error = currentAngle - angleToHub;
       // error = -1 * ((error + 180) % 360);
@@ -141,6 +143,7 @@ public class Drivetrain extends SubsystemBase {
   }
   private void driveRobotRelative(ChassisSpeeds speeds){
     swerveDrive.drive(speeds, false, new Translation2d());
+    swerveDrive.drive(speeds);
   }
   private void resetPose(Pose2d pose){
     swerveDrive.resetOdometry(pose);

@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public final class Vision extends SubsystemBase {
@@ -18,10 +19,12 @@ public final class Vision extends SubsystemBase {
     }
     //This method updates Drivetrain's odometry to align with field-relative measurements. It is internally called periodically, so there is no need to use this method
     public void periodic(){
+        if(!DriverStation.isAutonomous()){
         for(VisionReading reading: shutter.estimatePose())
             updateDrivetrain.accept(reading.getPose2d(), reading.getTimestampSeconds());
         for(VisionReading reading: ardu.estimatePose())
             updateDrivetrain.accept(reading.getPose2d(), reading.getTimestampSeconds());
+        } //teleop init to reset to 00 everytime
     }
 
 

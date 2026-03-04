@@ -11,8 +11,11 @@ import frc.robot.subsystems.vision.Vision;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -36,7 +39,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain;
   private final Vision m_vision;
   private final Joystick m_joystick = new Joystick(1);
-  private final Command driveCommand;
+  final Command driveCommand;
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
 
@@ -53,14 +56,15 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(2) * -1,
       null,//replace to getVisionWorking
-    .12,
-      0.2526,
+    .15,
+      0,
       0);
+      // NamedCommands.registerCommand("Potato", Commands.print("HKFJSDHFKJDSHFKJSDHFKSJDFHKSDJFHSDKJFHSDKJFHSDKJFHSDFKJSDHFKJSDHFKJSDFHSKJFHSKJDFHSKDJFHSDKJFHSDKFJSDHFKSJDFKSJDFHSDKJFHSDKJFSDH"));
     // Configure the trigger bindings
     configureBindings();
     autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
       stream.filter(auto -> auto.getName().startsWith("")):stream);
-    SmartDashboard.putData("Auto Chooser", autoChooser);;
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -86,16 +90,20 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-
-    return autoChooser.getSelected();
+    // String name = autoChooser.getSelected().getName();
+    // System.out.println(name);
+    return new PathPlannerAuto("sigma");
   }
   public void disabledPeriodic(){
     //Implement as required
   }
+  public void resetPose(){
+    m_drivetrain.swerveDrive.resetOdometry(new Pose2d());
+  }
   public void periodic(){
     // System.out.println(m_drivetrain.swerveDrive.getPose());
     // System.out.println(m_drivetrain.orientationError());
-    System.out.println("Angle: " + m_drivetrain.hubAngle());
+    // System.out.println("Angle: " + m_drivetrain.hubAngle());
     // System.out.println("X: " + m_drivetrain.swerveDrive.getPose().getX());
     // System.out.println("Y: " + m_drivetrain.swerveDrive.getPose().getY());
   }
