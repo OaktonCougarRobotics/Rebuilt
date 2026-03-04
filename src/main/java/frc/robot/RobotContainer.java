@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Drivetrain;
 
 import java.io.File;
@@ -34,6 +35,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain;
   private final Joystick m_joystick = new Joystick(1);
   private final Command driveCommand;
+  private final Command shootCommand;
 
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
 
@@ -45,6 +47,8 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(1) * -1,
       () -> m_joystick.getRawAxis(0) * -1,
       () -> m_joystick.getRawAxis(2) * -1);
+
+    shootCommand = new ShootCommand(null, null, null);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -60,6 +64,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(driveCommand);
+
+
     
 //m_drivetrain.driveCommand()
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));

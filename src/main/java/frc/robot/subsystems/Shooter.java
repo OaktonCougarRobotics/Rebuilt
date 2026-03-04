@@ -5,11 +5,21 @@ import edu.wpi.first.math.controller.PIDController;
 
 public class Shooter {
     private TalonFX shooterMotor;
-    private PIDController speedController;
+    private TalonFX hoodMotor;
 
-    public Shooter(int shooterMotorID) {
+    public Shooter(int shooterMotorID, int hoodMotorID) {
         shooterMotor = new TalonFX(shooterMotorID);
         shooterMotor.setPosition(0);
-        speedController = new PIDController(1, 0, 0);
+
+        hoodMotor = new TalonFX(hoodMotorID);
+        hoodMotor.setPosition(0);
+    }
+
+    public TalonFX getShooterMotor() {
+        return shooterMotor;
+    }
+
+    public TalonFX gethoodMotor() {
+        return hoodMotor;
     }
 }

@@ -31,6 +31,4 @@ public final class Vision {
         else /*calculate normal error */
             return null;
     }
-
-
 }
