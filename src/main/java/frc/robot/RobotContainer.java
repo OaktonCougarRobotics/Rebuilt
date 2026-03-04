@@ -41,6 +41,9 @@ public class RobotContainer {
   private final Joystick m_joystick = new Joystick(1);
   final Command driveCommand;
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
+  private final Trigger sysIdButton = new Trigger(() -> m_joystick.getRawButton(4));
+  Command sysRoutine;
+
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
 
   private SendableChooser<Command> autoChooser;
@@ -65,6 +68,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
       stream.filter(auto -> auto.getName().startsWith("")):stream);
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    sysRoutine = m_drivetrain.getSysIdCommand();
   }
 
   /**
@@ -81,6 +85,7 @@ public class RobotContainer {
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.OUTTAKE));
     alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
+    sysIdButton.onTrue(sysRoutine);
   }
 
   /**

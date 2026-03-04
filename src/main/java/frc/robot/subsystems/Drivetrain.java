@@ -15,19 +15,23 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 import swervelib.parser.SwerveParser;
 
 public class Drivetrain extends SubsystemBase {
 
   public SwerveDrive swerveDrive;
-
+  public SysIdRoutine routine;
 
    /**
    * Drivetrain Subsystem. Controls movement of robot
@@ -49,8 +53,13 @@ public class Drivetrain extends SubsystemBase {
     }
     swerveDrive.getModuleMap().get("frontright").setAngle(0);
     configureAuto();
+
+
+      routine = SwerveDriveTest.setDriveSysIdRoutine(new SysIdRoutine.Config(), this, swerveDrive,12.00,false);
       }
-        
+      public Command getSysIdCommand(){
+        return SwerveDriveTest.generateSysIdCommand(routine, 1, 1, 1);
+      }
       private void configureAuto() {
         RobotConfig config;
         try{
