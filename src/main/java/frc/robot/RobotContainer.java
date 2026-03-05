@@ -11,11 +11,9 @@ import frc.robot.subsystems.vision.Vision;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -64,11 +62,11 @@ public class RobotContainer {
       0);
       // NamedCommands.registerCommand("Potato", Commands.print("HKFJSDHFKJDSHFKJSDHFKSJDFHKSDJFHSDKJFHSDKJFHSDKJFHSDFKJSDHFKJSDHFKJSDFHSKJFHSKJDFHSKDJFHSDKJFHSDKFJSDHFKSJDFKSJDFHSDKJFHSDKJFSDH"));
     // Configure the trigger bindings
-    configureBindings();
     autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
       stream.filter(auto -> auto.getName().startsWith("")):stream);
     SmartDashboard.putData("Auto Chooser", autoChooser);
     sysRoutine = m_drivetrain.getSysIdCommand();
+        configureBindings();
   }
 
   /**

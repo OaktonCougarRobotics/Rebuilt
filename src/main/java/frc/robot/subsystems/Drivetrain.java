@@ -58,7 +58,7 @@ public class Drivetrain extends SubsystemBase {
       routine = SwerveDriveTest.setDriveSysIdRoutine(new SysIdRoutine.Config(), this, swerveDrive,12.00,false);
       }
       public Command getSysIdCommand(){
-        return SwerveDriveTest.generateSysIdCommand(routine, 1, 1, 1);
+        return SwerveDriveTest.generateSysIdCommand(routine, 1, 1.0, 1);
       }
       private void configureAuto() {
         RobotConfig config;
