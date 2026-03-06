@@ -53,7 +53,7 @@ public class Drivetrain extends SubsystemBase {
     }
     swerveDrive.getModuleMap().get("frontright").setAngle(0);
     configureAuto();
-
+    Math.sqrt(Math.pow(swerveDrive.getRobotVelocity().vxMetersPerSecond,2)+Math.pow(swerveDrive.getRobotVelocity().vyMetersPerSecond,2));
 
       routine = SwerveDriveTest.setDriveSysIdRoutine(new SysIdRoutine.Config(), this, swerveDrive,12.00,false);
       }
