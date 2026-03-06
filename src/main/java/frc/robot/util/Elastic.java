@@ -12,6 +12,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringTopic;
+<<<<<<< HEAD
+=======
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+>>>>>>> main
 
 public final class Elastic {
   private static final StringTopic notificationTopic =
@@ -50,7 +55,11 @@ public final class Elastic {
       e.printStackTrace();
     }
   }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> main
   /**
    * Selects the tab of the dashboard with the given name. If no tab matches the name, this will
    * have no effect on the widgets or tabs in view.
@@ -62,6 +71,10 @@ public final class Elastic {
    */
   public static void selectTab(String tabName) {
     selectedTabPublisher.set(tabName);
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
   }
 
   /**
@@ -387,4 +400,8 @@ public final class Elastic {
       return this;
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> main
