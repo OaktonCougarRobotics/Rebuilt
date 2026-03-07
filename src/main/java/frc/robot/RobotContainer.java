@@ -57,7 +57,7 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(2) * -1,
       null,//replace to getVisionWorking
-    0.10,
+    0.07,
       0.0,
       0.0);
       // NamedCommands.registerCommand("Potato", Commands.print("HKFJSDHFKJDSHFKJSDHFKSJDFHKSDJFHSDKJFHSDKJFHSDKJFHSDFKJSDHFKJSDHFKJSDFHSKJFHSKJDFHSKDJFHSDKJFHSDKFJSDHFKSJDFKSJDFHSDKJFHSDKJFSDH"));
