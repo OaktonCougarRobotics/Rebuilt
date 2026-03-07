@@ -107,7 +107,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
    /**
-     * Finds the error in orientation of the bot based on position and actual orientation
+     * Finds the error in orientation of the bot to the hub based on position and actual orientation
      * @param real the actual orientation of the bot IN DEGREES
      * @param x the relative x position from the hub
      * @param y the relative y position from the hub
@@ -138,6 +138,25 @@ public class Drivetrain extends SubsystemBase {
       return angleToHub;
     }
 
+    public double tangentialVelocity() {
+      ChassisSpeeds velocity = swerveDrive.getFieldVelocity();
+      double vx = velocity.vxMetersPerSecond;
+      double vy = velocity.vyMetersPerSecond;
+      double velocityAngle = Math.atan(Math.toRadians(vy/vx));
+      double speed = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy,2));
+      double vt = speed * Math.cos(Math.toRadians(90 - hubAngle() - (180 - velocityAngle)));
+      return vt;
+    }
+
+    public double radialVelocity() {
+      ChassisSpeeds velocity = swerveDrive.getFieldVelocity();
+      double vx = velocity.vxMetersPerSecond;
+      double vy = velocity.vyMetersPerSecond;
+      double velocityAngle = Math.atan(Math.toRadians(vy/vx));
+      double speed = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy,2));
+      double vt = speed * Math.sin(Math.toRadians(90 - hubAngle() - (180 - velocityAngle)));
+      return vt;
+    }
 
   @Override
   public void periodic() {
