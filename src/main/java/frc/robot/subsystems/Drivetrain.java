@@ -173,7 +173,7 @@ public class Drivetrain extends SubsystemBase {
     swerveDrive.drive(speeds, false, new Translation2d());
     swerveDrive.drive(speeds);
   }
-  private void resetPose(Pose2d pose){
+  public void resetPose(Pose2d pose){
     swerveDrive.resetOdometry(pose);
   }
   private ChassisSpeeds getRobotRelativeSpeeds(){

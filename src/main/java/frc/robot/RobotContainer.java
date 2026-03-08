@@ -34,8 +34,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public RobotState robotState = RobotState.NEUTRAL;
-  private final Drivetrain m_drivetrain;
-  private final Vision m_vision;
+  public final Drivetrain m_drivetrain;
+  public final Vision m_vision;
   private final Joystick m_joystick = new Joystick(1);
   final Command driveCommand;
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
@@ -49,7 +49,7 @@ public class RobotContainer {
   public RobotContainer() {
     m_drivetrain = new Drivetrain(
       new File(Filesystem.getDeployDirectory(), "swerve"));
-      m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement);
+      m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement, m_drivetrain);
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
@@ -57,7 +57,7 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(2) * -1,
       null,//replace to getVisionWorking
-    0.07,
+    0.2,
       0.0,
       0.0);
       // NamedCommands.registerCommand("Potato", Commands.print("HKFJSDHFKJDSHFKJSDHFKSJDFHKSDJFHSDKJFHSDKJFHSDKJFHSDFKJSDHFKJSDHFKJSDFHSKJFHSKJDFHSKDJFHSDKJFHSDKFJSDHFKSJDFKSJDFHSDKJFHSDKJFSDH"));
@@ -95,7 +95,7 @@ public class RobotContainer {
     // An example command will be run in autonomous
     // String name = autoChooser.getSelected().getName();
     // System.out.println(name);
-    return new PathPlannerAuto("sigma");
+    return new PathPlannerAuto("Joshua's wrath");
   }
   public void disabledPeriodic(){
     //Implement as required
@@ -109,6 +109,8 @@ public class RobotContainer {
     // System.out.println("Angle: " + m_drivetrain.hubAngle());
     // System.out.println("X: " + m_drivetrain.swerveDrive.getPose().getX());
     // System.out.println("Y: " + m_drivetrain.swerveDrive.getPose().getY());
+    
+
   }
   public enum RobotState{
     NEUTRAL,

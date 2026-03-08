@@ -6,7 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 
 /**
@@ -22,11 +24,22 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-public static final double MAX_SPEED = 6.0;
-//need to be in meters
-public static Translation2d redHub = new Translation2d(11.901, 4.021);
-public static Translation2d blueHub = new Translation2d(4.6116,4.021);
-
-public static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+  public static final double MAX_SPEED = 6.0;
+  //need to be in meters
+  public static Translation2d redHub = new Translation2d(11.901, 4.021);
+  public static Translation2d blueHub = new Translation2d(4.6116,4.021);
+  // public static final SwerveModulePosition[] swerveDriveOffsets = {
+  //   new SwerveModulePosition(0.392257587368, new Rotation2d(1 * Math.PI/4)),
+  //   new SwerveModulePosition(0.392257587368, new Rotation2d(3 * Math.PI/4)),
+  //   new SwerveModulePosition(0.392257587368, new Rotation2d(5 * Math.PI/4)),
+  //   new SwerveModulePosition(0.392257587368, new Rotation2d(7 * Math.PI/4))
+  // };
+  public static final Translation2d[] swerveDriveTranslations = {
+    new Translation2d(0.277368, .277368),
+    new Translation2d(0.277368, -.277368),
+    new Translation2d(-0.277368, .277368),
+    new Translation2d(-0.277368, -.277368)
+  }; 
+  public static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
 }
