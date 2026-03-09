@@ -4,20 +4,15 @@ import java.util.HashSet;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.ejml.dense.row.linsol.qr.SolvePseudoInverseQrp_DDRM;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants;
 import frc.robot.RobotContainer.RobotState;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.vision.Vision;
 
 public class DriveCommand extends Command{
      
@@ -27,7 +22,6 @@ public class DriveCommand extends Command{
     private DoubleSupplier thetaTranslationSupplier;
     private PIDController thetaController;
     private Supplier<RobotState> stateSupplier;
-    private Supplier<Pose2d> poseSupplier;
     /**
      * Constructs a DriveCommand command
      * 
@@ -41,7 +35,6 @@ public class DriveCommand extends Command{
                         DoubleSupplier xTranslationSupplier, 
                         DoubleSupplier yTranslationSupplier, 
                         DoubleSupplier thetaTranslationSupplier, 
-                        Supplier<Pose2d> getPose,
                         double kP,  
                         double kI, 
                         double kD
@@ -53,7 +46,6 @@ public class DriveCommand extends Command{
         this.yTranslationSupplier = yTranslationSupplier;
         this.thetaTranslationSupplier = thetaTranslationSupplier;
         this.thetaController = new PIDController(kP, kI, kD);
-        this.poseSupplier = getPose;
         
     }
     @Override

@@ -7,9 +7,9 @@ package frc.robot;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.RobotContainer.RobotState;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -18,7 +18,7 @@ import frc.robot.RobotContainer.RobotState;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  private boolean wasLastAuto;
   private final RobotContainer m_robotContainer;
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -69,11 +69,17 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    if(wasLastAuto){
+
+      m_robotContainer.m_drivetrain.resetPose(m_robotContainer.m_vision.autoEstimator.getEstimatedPosition());
+    }
+  }
 
   @Override
   public void disabledPeriodic() {
@@ -85,7 +91,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.resetPose();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    SmartDashboard.putString("Pose", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+    // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -96,7 +103,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    wasLastAuto = true;
+    SmartDashboard.putString("Pose", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+
+    // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
+    // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
+  }
 
   @Override
   public void teleopInit() {
@@ -116,6 +129,7 @@ public class Robot extends TimedRobot {
 =======
   public void teleopPeriodic() {
     m_robotContainer.periodic();
+    wasLastAuto = false;
   }
 >>>>>>> main
 
