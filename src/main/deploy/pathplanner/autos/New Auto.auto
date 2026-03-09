@@ -5,13 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RT to MID"
+                  "pathName": "RT to MR"
                 }
               },
               {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MID to wall"
+            "pathName": "MR to SHOOT"
           }
         },
         {
@@ -34,15 +34,34 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "wait",
                 "data": {
-                  "waitTime": 7.0
+                  "waitTime": 5.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SHOOT to IMP0"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Empty Shooter"
+                  "name": "Intake"
                 }
               }
             ]
@@ -51,13 +70,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RW to PS"
+            "pathName": "IMP0 to SHOOT"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RPS to RW"
+            "name": "Shoot"
           }
         }
       ]
