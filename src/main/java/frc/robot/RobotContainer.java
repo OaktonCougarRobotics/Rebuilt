@@ -61,7 +61,7 @@ public class RobotContainer {
       () -> m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(2) * -1,
       () -> isTrenchLock,
-      0.1,
+      0.072,
       0.0,
       0.0);
     // Configure the trigger bindings
@@ -99,7 +99,7 @@ public class RobotContainer {
     // An example command will be run in autonomous
     // String name = autoChooser.getSelected().getName();
     // System.out.println(name);
-    return new PathPlannerAuto("Joshua's wrath");
+    return new PathPlannerAuto("Rightest Auto");
   }
   public void disabledPeriodic(){
     //Implement as required

@@ -260,11 +260,21 @@ class Calculations{
         }
         return diff;*/
 
-        double velocityX = drivetrain.swerveDrive.getFieldVelocity().vxMetersPerSecond;
-        double velocityY = drivetrain.swerveDrive.getFieldVelocity().vyMetersPerSecond; 
-        // double 
-        return 0;
+        double vx = tangentialVelocity();
+        double vy = radialVelocity();
+
+        double idealVelocity = desiredShooterSpeed2D();
+        double angle = drivetrain.hubAngle();
+        double idealVelocityX = idealVelocity * Math.cos(angle);
+        double idealVelocityY = idealVelocity * Math.sin(angle);
+
+        double realVelocityX = idealVelocityX - vx;
+        double realVelocityY = idealVelocityY - vy;
+        return Math.atan2(realVelocityY, realVelocityX);
+
     }
+
+    
 
     /**
      * Finds the error in orientation of the bot based on position and actual orientation
