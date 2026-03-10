@@ -22,6 +22,7 @@ public class DriveCommand extends Command{
     private DoubleSupplier thetaTranslationSupplier;
     private PIDController thetaController;
     private Supplier<RobotState> stateSupplier;
+    private Supplier<Boolean> isTrenchLockSupplier;
     /**
      * Constructs a DriveCommand command
      * 
@@ -34,7 +35,8 @@ public class DriveCommand extends Command{
                         Supplier<RobotState> stateSupplier,
                         DoubleSupplier xTranslationSupplier, 
                         DoubleSupplier yTranslationSupplier, 
-                        DoubleSupplier thetaTranslationSupplier, 
+                        DoubleSupplier thetaTranslationSupplier,
+                        Supplier<Boolean> isTrenchLockSupplier,  
                         double kP,  
                         double kI, 
                         double kD
@@ -46,7 +48,7 @@ public class DriveCommand extends Command{
         this.yTranslationSupplier = yTranslationSupplier;
         this.thetaTranslationSupplier = thetaTranslationSupplier;
         this.thetaController = new PIDController(kP, kI, kD);
-        
+        this.isTrenchLockSupplier = isTrenchLockSupplier; 
     }
     @Override
     public void initialize() {
@@ -62,8 +64,9 @@ public class DriveCommand extends Command{
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisVelocity(),
 
-            (stateSupplier.get()==RobotState.OUTTAKE?
+            (stateSupplier.get()==RobotState.OUTTAKE || isTrenchLockSupplier.get() ?
             
+              -
               echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
             )),
           new Translation2d()
@@ -79,14 +82,29 @@ public class DriveCommand extends Command{
         return false;
     }
     public double echo(){
+      if(stateSupplier.get()==RobotState.OUTTAKE){
       drivetrain.distance();
-      double a = drivetrain.orientationError();
+      double a = drivetrain.getHeadingError();
       SmartDashboard.putNumber("angle error: ", a);
       double x = thetaController.calculate(a,0);
-      // thetaController.enableContinuousInput(-180, 180); use this or not?
+      // thetaController.enableContinuousInput(0, 360); //
+    // use this or not?
       //minimum compensation for the PID loop?
       // System.out.println("Calculated output: "+ x);
       return x;
+      } else {
+        double current = drivetrain.swerveDrive.getPose().getRotation().getDegrees();
+        System.out.println(current);
+        if(Math.abs(current)<90) 
+                  return -thetaController.calculate(current, 0);
+        else if(current<-90)
+            return -thetaController.calculate(current, -180);
+          else 
+            return -thetaController.calculate(current, 180);
+
+        
+        // double x =                                              thetaController.calculate(current);
+      }
     }
     @Override
     public boolean runsWhenDisabled(){

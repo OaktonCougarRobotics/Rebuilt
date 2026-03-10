@@ -113,40 +113,40 @@ public class Drivetrain extends SubsystemBase {
      * @param y the relative y position from the hub
      * @return real orientation minus expected orientation IN DEGREES
      */
-    public double orientationError() {
-      Pose2d currentPose = swerveDrive.getPose();
-      double x = currentPose.getX();
-      double y = currentPose.getY();
-      double currentAngle = currentPose.getRotation().getDegrees() % 360;//fr
-      double angleToHub = Math.toDegrees(Math.atan((y-Constants.redHub.getY())/Math.abs(x-Constants.redHub.getX())) % 360);// add test case for right above/under when x=0
+    // public double orientationError() {
+    //   Pose2d currentPose = swerveDrive.getPose();
+    //   double x = currentPose.getX();
+    //   double y = currentPose.getY();
+    //   double currentAngle = currentPose.getRotation().getDegrees() % 360;//fr
+    //   double angleToHub = Math.toDegrees(Math.atan((y-Constants.redHub.getY())/Math.abs(x-Constants.redHub.getX())) % 360);// add test case for right above/under when x=0
 
-      double error = currentAngle - angleToHub;
-      // error = -1 * ((error + 180) % 360);
-      if (error > 0) {
-        error -= 180;
-      } else {
-        error += 180;
-      }
-      return error;
-    }
-    // TRY THIS METHOD
-    // public double getHeadingError() {
-    //     Translation2d target = pickTarget
-    //     Pose2d currentPose = swerveDrive.getPose();
-
-    //     double dx = target.getX() - currentPose.getX();
-    //     double dy = target.getY() - currentPose.getY();
-
-    //     double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
-
-    //     double error = targetAngle - currentPose.getRotation().getDegrees();;
-
-    //     error = (error + 180) % 360;
-    //     if (error < 0) error += 360;
+    //   double error = currentAngle - angleToHub;
+    //   // error = -1 * ((error + 180) % 360);
+    //   if (error > 0) {
     //     error -= 180;
-
-    //     return error;
+    //   } else {
+    //     error += 180;
+    //   }
+    //   return error;
     // }
+    // TRY THIS METHOD
+    public double getHeadingError() {
+        Translation2d target = pickTarget();
+        Pose2d currentPose = swerveDrive.getPose();
+
+        double dx = target.getX() - currentPose.getX();
+        double dy = target.getY() - currentPose.getY();
+
+        double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
+
+        double error = targetAngle - currentPose.getRotation().getDegrees();;
+        error = (error+360)%360; 
+        // error = (error + 180) % 360;
+        if (error > 180) error -= 360;
+        // error -= 180;
+        // System.out.println(error);
+        return error;
+    }
     public double hubAngle() {
       Pose2d currentPose = swerveDrive.getPose();
       double x = currentPose.getX();

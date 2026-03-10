@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.vision.Vision;
 
 import java.io.File;
@@ -17,11 +18,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -36,12 +39,12 @@ public class RobotContainer {
   public RobotState robotState = RobotState.NEUTRAL;
   public final Drivetrain m_drivetrain;
   public final Vision m_vision;
+  public final Shooter m_shooter;
   private final Joystick m_joystick = new Joystick(1);
   final Command driveCommand;
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
-  private final Trigger sysIdButton = new Trigger(() -> m_joystick.getRawButton(4));
-  Command sysRoutine;
-
+  private final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
+  public boolean isTrenchLock;
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
 
   private SendableChooser<Command> autoChooser;
@@ -50,20 +53,22 @@ public class RobotContainer {
     m_drivetrain = new Drivetrain(
       new File(Filesystem.getDeployDirectory(), "swerve"));
       m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement, m_drivetrain);
+      m_shooter = new Shooter(m_drivetrain, 0, 0);
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
       () -> m_joystick.getRawAxis(1) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue?-1:1),
       () -> m_joystick.getRawAxis(2) * -1,
-      0.2,
+      () -> isTrenchLock,
+      0.1,
       0.0,
       0.0);
     // Configure the trigger bindings
     autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
       stream.filter(auto -> auto.getName().startsWith("")):stream);
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    sysRoutine = m_drivetrain.getSysIdCommand();
+    // sysRoutine = m_drivetrain.getSysIdCommand();
         configureBindings();
   }
 
@@ -81,7 +86,8 @@ public class RobotContainer {
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::zeroGyro));
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.OUTTAKE));
     alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
-    sysIdButton.onTrue(sysRoutine);
+    trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
+    trenchLockButton.onFalse(Commands.runOnce(() ->{isTrenchLock = false;}, m_drivetrain ));
   }
 
   /**
@@ -108,7 +114,13 @@ public class RobotContainer {
     // System.out.println("X: " + m_drivetrain.swerveDrive.getPose().getX());
     // System.out.println("Y: " + m_drivetrain.swerveDrive.getPose().getY());
     
-
+    // System.out.println(m_drivetrain.getHeadingError());
+    SmartDashboard.putNumber("rotation", m_shooter.getOrientationError());
+    SmartDashboard.putNumber("tangential", m_shooter.getTangentialVelocity());
+    SmartDashboard.putNumber("radial", m_shooter.getRadialVelocity());
+    SmartDashboard.putNumber("Velocity", Math.sqrt(Math.pow(m_drivetrain.swerveDrive.getFieldVelocity().vxMetersPerSecond,2)+Math.pow(m_drivetrain.swerveDrive.getFieldVelocity().vyMetersPerSecond,2)));
+    SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
   }
   public enum RobotState{
     NEUTRAL,
@@ -116,4 +128,3 @@ public class RobotContainer {
     OUTTAKE
   }
 }
-

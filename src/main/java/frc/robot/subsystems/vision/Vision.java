@@ -20,7 +20,7 @@ import frc.robot.subsystems.Drivetrain;
 public final class Vision extends SubsystemBase {
     public Camera shutter;
     public Camera ardu;    
-    public boolean visionOn;
+    public boolean visionOn = true;
     public Drivetrain drivetrain;
     public boolean tagSeenInAuto;
     public boolean tagSeenInTeleop;
