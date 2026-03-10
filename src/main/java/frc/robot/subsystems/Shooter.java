@@ -259,7 +259,7 @@ class Calculations{
             return diff-360;
         }
         return diff;*/
-
+        /*
         double vx = tangentialVelocity();
         double vy = radialVelocity();
 
@@ -271,7 +271,14 @@ class Calculations{
         double realVelocityX = idealVelocityX - vx;
         double realVelocityY = idealVelocityY - vy;
         return Math.atan2(realVelocityY, realVelocityX);
+        */
 
+        double idealVelocity = desiredShooterSpeed2D();
+        double hubAngle = drivetrain.hubAngle();
+        double idealVelocityX = idealVelocity * Math.cos(hubAngle);
+        double idealVelocityY = idealVelocity * Math.sin(hubAngle);
+
+        return 0.0;
     }
 
     

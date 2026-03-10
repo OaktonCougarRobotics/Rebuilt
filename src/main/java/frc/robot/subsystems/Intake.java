@@ -24,14 +24,14 @@ public class Intake extends SubsystemBase {
     }
     @Override
     public void periodic(){
-        if(robotStateSupplier.get()==RobotState.INTAKE) {
-
-        }
+        // if(robotStateSupplier.get()==RobotState.INTAKE) {
+        //     intakeWheel
+        // }
         // else if() {
 
         // }
-        else{
-            //neutral stuff
-        }
+        // else{
+        //     //neutral stuff
+        // }
     }
 }
