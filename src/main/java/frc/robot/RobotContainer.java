@@ -65,8 +65,7 @@ public class RobotContainer {
       0.0,
       0.0);
     // Configure the trigger bindings
-    autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier((stream) -> true? //fix this
-      stream.filter(auto -> auto.getName().startsWith("")):stream);
+    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     // sysRoutine = m_drivetrain.getSysIdCommand();
         configureBindings();
@@ -99,14 +98,18 @@ public class RobotContainer {
     // An example command will be run in autonomous
     // String name = autoChooser.getSelected().getName();
     // System.out.println(name);
-    return new PathPlannerAuto("Rightest Auto");
+    //return new PathPlannerAuto("Rightest Auto");
+    String x = autoChooser.getSelected().getName();
+    return new PathPlannerAuto(x);
   }
+
   public void disabledPeriodic(){
     //Implement as required
   }
   public void resetPose(){
     m_drivetrain.swerveDrive.resetOdometry(new Pose2d());
   }
+  
   public void periodic(){
     // System.out.println(m_drivetrain.swerveDrive.getPose());
     // System.out.println(m_drivetrain.orientationError());

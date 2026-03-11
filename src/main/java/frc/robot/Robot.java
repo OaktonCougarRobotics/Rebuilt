@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    if(wasLastAuto){
+    if(wasLastAuto && m_robotContainer.m_vision.visionOn){
 
       m_robotContainer.m_drivetrain.resetPose(m_robotContainer.m_vision.autoEstimator.getEstimatedPosition());
     }
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.resetPose();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    SmartDashboard.putString("Pose", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+    SmartDashboard.putString("Potato", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
 
     // schedule the autonomous command (example)
@@ -105,7 +105,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     wasLastAuto = true;
-    SmartDashboard.putString("Pose", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+    SmartDashboard.putString("Potato", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
 
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());

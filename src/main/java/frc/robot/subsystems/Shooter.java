@@ -99,9 +99,11 @@ public class Shooter extends SubsystemBase {
 
 class Calculations{
     private final Drivetrain drivetrain;
+    private final double timeToShoot;
 
     public Calculations(Drivetrain drivetrain){
         this.drivetrain=drivetrain;
+        timeToShoot = 1.0;
     }
 
     //all in meters
@@ -116,16 +118,16 @@ class Calculations{
      * Returns the distance from the hub
      * @return distance
      */
-    public double distance(){
-        double x=drivetrain.swerveDrive.getPose().getX();
-        double y=drivetrain.swerveDrive.getPose().getY();
-        if(DriverStation.getAlliance().get()==DriverStation.Alliance.Blue)
-            return Math.sqrt((x-BLUE_HUB_X)*(x-BLUE_HUB_X)+(y-HUB_Y)*(y-HUB_Y));
-        else if(DriverStation.getAlliance().get()==DriverStation.Alliance.Red)
-            return Math.sqrt((x-RED_HUB_X)*(x-RED_HUB_X)+(y-HUB_Y)*(y-HUB_Y));
-        System.out.println("Invalid alliance");
-        return 0;
-    }
+    // public double distance(){
+    //     double x=drivetrain.swerveDrive.getPose().getX();
+    //     double y=drivetrain.swerveDrive.getPose().getY();
+    //     if(DriverStation.getAlliance().get()==DriverStation.Alliance.Blue)
+    //         return Math.sqrt((x-BLUE_HUB_X)*(x-BLUE_HUB_X)+(y-HUB_Y)*(y-HUB_Y));
+    //     else if(DriverStation.getAlliance().get()==DriverStation.Alliance.Red)
+    //         return Math.sqrt((x-RED_HUB_X)*(x-RED_HUB_X)+(y-HUB_Y)*(y-HUB_Y));
+    //     System.out.println("Invalid alliance");
+    //     return 0;
+    // }
 
     public double velocityX(){
         return drivetrain.swerveDrive.getFieldVelocity().vxMetersPerSecond;
@@ -143,7 +145,7 @@ class Calculations{
      * otherwise, returns an angle calculated by a regression IN DEGREES
      */
     public double angle(){
-        double distance=distance();
+        double distance=drivetrain.distance();
         if(distance<0.82){
             return 80;
         }
@@ -167,7 +169,7 @@ class Calculations{
     }
 
     public double desiredShooterSpeed2D(){
-        double distance=distance();
+        double distance=drivetrain.distance() + radialVelocity() * timeToShoot;
         double theta=Math.toRadians(angle());
         //return (4.903325*distance*distance)/((Math.tan(theta)*distance-relativeHeight)*Math.cos(theta)*Math.cos(theta));
         // return Math.sqrt((-4.903325*distance*distance)/(relativeHeight*Math.cos(theta)*Math.cos(theta))+Math.tan(theta)*distance);
@@ -278,10 +280,11 @@ class Calculations{
         double idealVelocityX = idealVelocity * Math.cos(hubAngle);
         double idealVelocityY = idealVelocity * Math.sin(hubAngle);
 
+        double time = (drivetrain.distance() + tangentialVelocity()*timeToShoot) / (idealVelocity*Math.cos(angle()));
+        double distanceBotMoves = tangentialVelocity() * time;
+        double angleError = Math.atan2(distanceBotMoves, drivetrain.distance());
         return 0.0;
     }
-
-    
 
     /**
      * Finds the error in orientation of the bot based on position and actual orientation
