@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
@@ -42,15 +44,19 @@ public class ShootCommand extends Command {
     @Override
     public void execute(){
         if(isManual.get()){
-            System.out.println("SHOOTER IS MANUAL");
+            // System.out.println("SHOOTER IS MANUAL");
             double a = manualOutput.get();
             shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE * a); //make sure button has range [-1,1]
             shooter.indexMotor.set(manualIndex.get()?1:-1);
         }
         else if (isShooting.get()){ //not manual and shooting rn
-            shooter.shooterMotor.setVoltage(10); // not manual and not shooting
+            // new SequentialCommandGroup(
+            //     Commands.runOnce(() -> shooter.shooterMotor.setVoltage(6), null),
+            //     Commands.runOnce(() -> shooter.shooterMotor.setVoltage(6), null),
+            // )
+            shooter.shooterMotor.setVoltage(6); // not manual and not shooting
             // shooter.indexMotor.setVoltage(8);
-            shooter.indexMotor.setControl(new VoltageOut(12));
+            shooter.indexMotor.setControl(new VoltageOut(6));
         }
         else {
             shooter.shooterMotor.setVoltage(0); // not manual and not shooting

@@ -67,11 +67,11 @@ public class IntakeCommand extends Command{
             SmartDashboard.putNumber("setpoint",correspondingSetpoint());
 
             // intake.intakeMotor.set(-intakeController.calculate(intake.intakeMotor.getPosition().getValueAsDouble(), correspondingSetpoint()));
-            if(getState.get()!=RobotState.NEUTRAL){
+            // if(getState.get()!=RobotState.NEUTRAL){
                 intake.intakeMotor.setControl(new MotionMagicDutyCycle(correspondingSetpoint()));
                 // System.out.println();
                 SmartDashboard.putNumber("CORRESPONDING ANGLE", correspondingSetpoint());
-            }
+            // }
             if(getState.get()!=RobotState.NEUTRAL && getState.get()!=RobotState.DEFENSE && (Math.abs(-5.5-intake.intakeMotor.getPosition().getValueAsDouble()))<.7) 
                 intake.feederWheel.set(Constants.MAX_FLYWHEEL_VOLTAGE*(getState.get()==RobotState.INTAKE?1:-1));
             else 
@@ -85,7 +85,7 @@ public class IntakeCommand extends Command{
         } else if (getState.get()==RobotState.DEFENSE){
             return 0;
         } else {
-            return intake.intakeMotor.getPosition().getValueAsDouble();
+            return intake.intakeMotor.getPosition().getValueAsDouble(); // change ts gurt
         }
     }
 }

@@ -97,7 +97,7 @@ public class DriveCommand extends Command{
       return x;
       } else {// called
         double current = drivetrain.swerveDrive.getPose().getRotation().getDegrees();
-        System.out.println(current);
+        // System.out.println(current);
         if(Math.abs(current)<90) 
                   return -thetaController.calculate(current, 0);
         else if(current<-90)

@@ -45,7 +45,6 @@ public class RobotContainer {
   public final Vision m_vision;
   public final Shooter m_shooter;
   // public final Shooter m_shooter;
-  public final Outtake m_outtake;
   // public final ShootCommand m_shootCommand;
   Intake m_intake = new Intake(30, 52, () -> robotState);
     private final Joystick m_joystick = new Joystick(1);
@@ -67,6 +66,7 @@ public class RobotContainer {
   );
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
   private final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
+  private final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
   public boolean isTrenchLock;
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
   private final Trigger flywheelTrigger = new Trigger(() -> m_buttonboardA.getRawButton(6));
@@ -83,11 +83,7 @@ public class RobotContainer {
       new File(Filesystem.getDeployDirectory(), "swerve"));
       m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement, m_drivetrain);
       // m_shooter = new Shooter(m_drivetrain, 0, 0);
-      m_outtake = new Outtake(
-        35, 
-        58,
-        () -> m_joystick.getRawButton(1)
-        );
+      
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
@@ -103,7 +99,7 @@ public class RobotContainer {
     // m_shootCommand = new ShootCommand(m_shooter,()-> m_buttonboardA.getRawButtonPressed(4), ()->m_buttonboardA.getRawButton(5), ()->0.0);
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // NamedCommands.registerCommand("Shoot", new ShootCommand(m_shooter, ()->true, ()-> false, ()-> 0.0, ()->false));
+    NamedCommands.registerCommand("Shoot", new ShootCommand(m_shooter, ()->true, ()-> false, ()-> 0.0, ()->false));
     // sysRoutine = m_drivetrain.getSysIdCommand();
         configureBindings();
   }
@@ -130,11 +126,13 @@ public class RobotContainer {
     alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
     trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
     trenchLockButton.onFalse(Commands.runOnce(() ->{isTrenchLock = false;}, m_drivetrain ));
-    flywheelTrigger.whileTrue(Commands.runOnce(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)));
-    flywheelTrigger.whileFalse(Commands.runOnce(() -> m_shooter.shooterMotor.setVoltage(0)));
-    indexTrigger.whileTrue(Commands.runOnce(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
-    indexTrigger.whileFalse(Commands.runOnce(() -> m_shooter.indexMotor.setVoltage(0)));
+    flywheelTrigger.whileTrue(Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)));
+    flywheelTrigger.whileFalse(Commands.run(() -> m_shooter.shooterMotor.setVoltage(0)));
+    indexTrigger.whileTrue(Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
+    indexTrigger.whileFalse(Commands.run(() -> m_shooter.indexMotor.setVoltage(0)));
 
+    swerveLockButton.whileTrue(Commands.run(() -> m_drivetrain.swerveDrive.lockPose()));
+    swerveLockButton.whileFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
 
     //FINISH THIS
 
@@ -178,7 +176,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("Velocity", Math.sqrt(Math.pow(m_drivetrain.swerveDrive.getFieldVelocity().vxMetersPerSecond,2)+Math.pow(m_drivetrain.swerveDrive.getFieldVelocity().vyMetersPerSecond,2)));
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("intake wrist", m_intake.intakeMotor.getPosition().getValueAsDouble());
   }
+
   public enum RobotState{
     NEUTRAL,
     INTAKE,
