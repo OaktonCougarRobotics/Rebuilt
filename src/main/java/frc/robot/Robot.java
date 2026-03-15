@@ -79,11 +79,20 @@ public class Robot extends TimedRobot {
 
       m_robotContainer.m_drivetrain.resetPose(m_robotContainer.m_vision.autoEstimator.getEstimatedPosition());
     }
+    
   }
 
   @Override
   public void disabledPeriodic() {
     m_robotContainer.periodic();
+    // m_robotContainer.jank.periodic();
+    // for ( String x: m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().keySet()){
+      SmartDashboard.putNumber("FRIED", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontleft").getAbsoluteEncoder().getAbsolutePosition());
+    // }
+
+      SmartDashboard.putNumber("hgfhgf", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontleft").getAbsolutePosition());
+  SmartDashboard.putNumber("baked", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontright").getAbsolutePosition());
+
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -92,6 +101,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.resetPose();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     SmartDashboard.putString("Potato", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
 
     // schedule the autonomous command (example)

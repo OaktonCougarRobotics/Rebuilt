@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
@@ -29,11 +30,11 @@ public final class Vision extends SubsystemBase {
     BiConsumer<Pose2d, Double> updateDrivetrain;
     public Vision(BiConsumer<Pose2d, Double> updateDrivetrain, Drivetrain drivetrain){
         this.drivetrain = drivetrain;
-        shutter = new Camera("Shutter623", new Transform3d(0.314325, -0.066675, 0.200025, new Rotation3d(0,Math.toRadians(-33.4),Math.toRadians(-13.5))));
-        ardu = new Camera("Arducam623", new Transform3d(0.301625, 0.1397, 0.1524, new Rotation3d(0,Math.toRadians(-24.7),Math.toRadians(16.7))));
+        shutter = new Camera("Shutter623", new Transform3d(0.2632456, 0.2980182, 0.512445, new Rotation3d(0,Math.toRadians(-18.3),Math.toRadians(11))));
+        ardu = new Camera("Arducam623", new Transform3d(0.2630932, -0.300228, 0.5041392, new Rotation3d(0,Math.toRadians(-9.2),Math.toRadians(-10))));
         this.updateDrivetrain = updateDrivetrain;
         navx = new AHRS(NavXComType.kMXP_SPI);
-        autoEstimator = new SwerveDrivePoseEstimator(
+        autoEstimator = new SwerveDrivePoseEstimator(   
          new SwerveDriveKinematics(Constants.swerveDriveTranslations),
          navx.getRotation2d(),
          drivetrain.swerveDrive.getModulePositions(),
@@ -42,6 +43,13 @@ public final class Vision extends SubsystemBase {
     }
     //This method updates Drivetrain's odometry to align with field-relative measurements. It is internally called periodically, so there is no need to use this method
     public void periodic(){
+        SmartDashboard.putBoolean("Vision", visionOn);
+        // if(!tagSeenInAuto && !tagSeenInTeleop){
+        // visionOn=false;
+        if(!shutter.isConnected() && !ardu.isConnected()){
+            visionOn=false;
+        }
+        
         if(
             !visionOn /* has vision been disabled? */
             || Math.abs(drivetrain.swerveDrive.getFieldVelocity().omegaRadiansPerSecond) >= Constants.MAX_STABLE_ANGULAR_VELOCITY /* is the bot rotating too fast? */
@@ -57,7 +65,7 @@ public final class Vision extends SubsystemBase {
                 tagSeenInAuto = tagSeenInAuto || readings.size()>0;
                 for (VisionReading reading:readings)
                     autoEstimator.addVisionMeasurement(reading.getPose2d(), reading.getTimestampSeconds());        
-            } else {
+            } else {// if tele
                 tagSeenInTeleop = tagSeenInTeleop || readings.size()>0;
                 for (VisionReading reading:readings)
                     updateDrivetrain.accept(reading.getPose2d(), reading.getTimestampSeconds());

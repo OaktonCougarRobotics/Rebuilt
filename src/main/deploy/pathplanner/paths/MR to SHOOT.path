@@ -16,16 +16,32 @@
     },
     {
       "anchor": {
-        "x": 1.8136091298145502,
-        "y": 0.7679885877318122
+        "x": 1.839486447931526,
+        "y": 0.6127246790299581
       },
       "prevControl": {
-        "x": 7.998288159771754,
-        "y": 0.5868473609129807
+        "x": 4.838007319979226,
+        "y": 0.7069190519738675
+      },
+      "nextControl": {
+        "x": -0.6317974322396576,
+        "y": 0.5350927246790291
+      },
+      "isLocked": false,
+      "linkedName": "RIGHT SHOOT"
+    },
+    {
+      "anchor": {
+        "x": 3.249800285306733,
+        "y": 2.2300570613432216
+      },
+      "prevControl": {
+        "x": 4.336647646219713,
+        "y": 1.3890442225415098
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": "RIGHT SHOOT"
+      "isLocked": false,
+      "linkedName": null
     }
   ],
   "rotationTargets": [

@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
-import javax.lang.model.util.ElementScanner14;
+// import javax.lang.model.util.ElementScanner14;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -51,12 +51,13 @@ public class Drivetrain extends SubsystemBase {
       e.printStackTrace();
       throw new RuntimeException("File failed to be loaded");
     }
-    swerveDrive.getModuleMap().get("frontright").setAngle(0);
+    // swerveDrive.getModuleMap().get("frontleft").setAngle(0); // recomment when working
     configureAuto();
     Math.sqrt(Math.pow(swerveDrive.getRobotVelocity().vxMetersPerSecond,2)+Math.pow(swerveDrive.getRobotVelocity().vyMetersPerSecond,2));
 
       routine = SwerveDriveTest.setDriveSysIdRoutine(new SysIdRoutine.Config(), this, swerveDrive,12.00,false);
-      }
+      
+    }
       public Command getSysIdCommand(){
         return SwerveDriveTest.generateSysIdCommand(routine, 1, 1.0, 1);
       }
@@ -82,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
           () -> {
               var alliance = DriverStation.getAlliance();
               if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
+                return alliance.get() == DriverStation.Alliance.Blue;
               }
               return false;
             }, 
@@ -197,6 +198,7 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("distance from hub", distance());
   }
 
   private Pose2d getPose(){
@@ -214,5 +216,9 @@ public class Drivetrain extends SubsystemBase {
   }
   public void zeroGyro(){
     swerveDrive.zeroGyro();
+  }
+  public void resetEverything(){
+    resetPose(new Pose2d());
+        zeroGyro();
   }
 }

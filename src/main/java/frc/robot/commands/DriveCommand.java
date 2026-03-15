@@ -58,6 +58,7 @@ public class DriveCommand extends Command{
     }
     @Override
     public void execute(){
+      System.out.println(thetaTranslationSupplier.getAsDouble());// not the problem
         drivetrain.swerveDrive.driveFieldOriented(new ChassisSpeeds(
 
             deadzone(xTranslationSupplier.getAsDouble(),0.05)
@@ -66,10 +67,10 @@ public class DriveCommand extends Command{
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
               * drivetrain.swerveDrive.getMaximumChassisVelocity(),
 
-            (stateSupplier.get()==RobotState.OUTTAKE || isTrenchLockSupplier.get() ?
+            (stateSupplier.get()==RobotState.SHOOT || isTrenchLockSupplier.get() ?
             
-              -
-              echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05)* Math.abs(deadzone(thetaTranslationSupplier.getAsDouble(),0.05)) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
+              
+              echo():-thetaTranslationSupplier.getAsDouble() * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
             )),
           new Translation2d()
         );
@@ -84,7 +85,7 @@ public class DriveCommand extends Command{
         return false;
     }
     public double echo(){
-      if(stateSupplier.get()==RobotState.OUTTAKE){
+      if(stateSupplier.get()==RobotState.SHOOT){
       drivetrain.distance();
       double a = drivetrain.getHeadingError();
       SmartDashboard.putNumber("angle error: ", a);
@@ -94,7 +95,7 @@ public class DriveCommand extends Command{
       //minimum compensation for the PID loop?
       // System.out.println("Calculated output: "+ x);
       return x;
-      } else {
+      } else {// called
         double current = drivetrain.swerveDrive.getPose().getRotation().getDegrees();
         System.out.println(current);
         if(Math.abs(current)<90) 
