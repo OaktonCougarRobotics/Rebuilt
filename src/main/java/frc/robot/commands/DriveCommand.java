@@ -70,7 +70,7 @@ public class DriveCommand extends Command{
             (stateSupplier.get()==RobotState.SHOOT || isTrenchLockSupplier.get() ?
             
               
-              echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * Math.abs(drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
+              -echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * Math.abs(drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
             ))
             //, new Translation2d()
         );

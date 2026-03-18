@@ -86,9 +86,9 @@ public class RobotContainer {
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> -m_joystick.getRawAxis(1),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
-      () -> -m_joystick.getRawAxis(0),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
-      () -> -m_joystick.getRawAxis(2),
+      () -> -1 * m_joystick.getRawAxis(1),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
+      () -> -1 * m_joystick.getRawAxis(0),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
+      () -> -1 * m_joystick.getRawAxis(2),
       () -> isTrenchLock,
       0.072,
       0.0,
@@ -121,6 +121,7 @@ public class RobotContainer {
     visionOnChanger.onTrue(Commands.runOnce(()-> {m_vision.visionOn=false;}, m_vision));
     visionOnChanger.onFalse(Commands.runOnce(()-> {m_vision.visionOn=true;}, m_vision));
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::resetEverything));
+    // navxResetButton.onTrue(Commands.runOnce(()-> m_drivetrain.swerveDrive.zeroGyro()));
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.SHOOT));
     alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
     trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
@@ -176,6 +177,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     SmartDashboard.putNumber("intake wrist", m_intake.intakeMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("X", m_drivetrain.swerveDrive.getPose().getX());
+    SmartDashboard.putNumber("Y", m_drivetrain.swerveDrive.getPose().getY());
+    SmartDashboard.putNumber("Z", m_drivetrain.swerveDrive.getPose().getRotation().getDegrees());
   }
 
   public enum RobotState{
