@@ -43,12 +43,11 @@ public final class Vision extends SubsystemBase {
     }
     //This method updates Drivetrain's odometry to align with field-relative measurements. It is internally called periodically, so there is no need to use this method
     public void periodic(){
+        SmartDashboard.putNumber("navx reading", navx.getAngle());
+        SmartDashboard.putNumber("yagsl reading", drivetrain.swerveDrive.getYaw().getDegrees());
         SmartDashboard.putBoolean("Vision", visionOn);
         // if(!tagSeenInAuto && !tagSeenInTeleop){
         // visionOn=false;
-        if(!shutter.isConnected() && !ardu.isConnected()){
-            visionOn=false;
-        }
         
         if(
             !visionOn /* has vision been disabled? */

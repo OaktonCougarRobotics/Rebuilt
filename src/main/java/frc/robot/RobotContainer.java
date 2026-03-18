@@ -9,7 +9,6 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Outtake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.vision.Vision;
 
@@ -87,9 +86,9 @@ public class RobotContainer {
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> -m_joystick.getRawAxis(1) * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
-      () -> -m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
-      () -> m_joystick.getRawAxis(2) * -1,
+      () -> -m_joystick.getRawAxis(1),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
+      () -> -m_joystick.getRawAxis(0),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
+      () -> -m_joystick.getRawAxis(2),
       () -> isTrenchLock,
       0.072,
       0.0,

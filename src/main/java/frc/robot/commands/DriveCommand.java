@@ -62,17 +62,17 @@ public class DriveCommand extends Command{
         drivetrain.swerveDrive.driveFieldOriented(new ChassisSpeeds(
 
             deadzone(xTranslationSupplier.getAsDouble(),0.05)
-              * drivetrain.swerveDrive.getMaximumChassisVelocity(),
+              * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()),
 
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
-              * drivetrain.swerveDrive.getMaximumChassisVelocity(),
+              * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()),
 
             (stateSupplier.get()==RobotState.SHOOT || isTrenchLockSupplier.get() ?
             
               
-              echo():-thetaTranslationSupplier.getAsDouble() * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
-            )),
-          new Translation2d()
+              echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * Math.abs(drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
+            ))
+            //, new Translation2d()
         );
     }
     @Override
@@ -95,11 +95,11 @@ public class DriveCommand extends Command{
       //minimum compensation for the PID loop?
       // System.out.println("Calculated output: "+ x);
       return x;
-      } else {// called
+      } else {// called trenchlock
         double current = drivetrain.swerveDrive.getPose().getRotation().getDegrees();
         // System.out.println(current);
         if(Math.abs(current)<90) 
-                  return -thetaController.calculate(current, 0);
+                  return -thetaController2.calculate(current, 0);
         else if(current<-90)
             return -thetaController2.calculate(current, -180);
           else 
