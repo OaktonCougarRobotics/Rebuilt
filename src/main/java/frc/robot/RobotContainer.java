@@ -5,8 +5,6 @@
 package frc.robot;
 
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -14,6 +12,8 @@ import frc.robot.subsystems.vision.Vision;
 
 import java.io.File;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -53,16 +55,16 @@ public class RobotContainer {
   public final Joystick m_buttonboardB = new Joystick(2);
   public final Trigger visionOnChanger = new Trigger(() -> m_buttonboardB.getRawButton(2));
   final Command driveCommand;
-  IntakeCommand intakeCommand = new IntakeCommand(
-    m_intake, 
-    ()-> false, 
-    () -> (m_buttonboardA.getRawButton(15)?RobotState.DEFENSE:(m_buttonboardA.getRawButton(16)?RobotState.INTAKE:RobotState.NEUTRAL)),//top 21 and bottom 22 down
-    () -> {if(m_buttonboardA.getRawButton(13)) return RobotState.INTAKE; else if (m_buttonboardA.getRawButton(14)) return RobotState.OUTTAKE; else return RobotState.NEUTRAL;},    
-    () -> {if(m_buttonboardA.getRawButton(11)) return -1.0; else if (m_buttonboardA.getRawButton(12)) return 1.0; else return 0.0;},
-    0.005,
-    0.0,
-    0.0
-  );
+  // IntakeCommand intakeCommand = new IntakeCommand(
+  //   m_intake, 
+  //   ()-> false, 
+  //   () -> (m_buttonboardA.getRawButton(15)?RobotState.DEFENSE:(m_buttonboardA.getRawButton(16)?RobotState.INTAKE:RobotState.NEUTRAL)),//top 21 and bottom 22 down
+  //   () -> {if(m_buttonboardA.getRawButton(13)) return RobotState.INTAKE; else if (m_buttonboardA.getRawButton(14)) return RobotState.OUTTAKE; else return RobotState.NEUTRAL;},    
+  //   () -> {if(m_buttonboardA.getRawButton(11)) return -1.0; else if (m_buttonboardA.getRawButton(12)) return 1.0; else return 0.0;},
+  //   0.005,
+  //   0.0,
+  //   0.0
+  // );
   private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
   private final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
   private final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
@@ -70,6 +72,9 @@ public class RobotContainer {
   private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
   private final Trigger flywheelTrigger = new Trigger(() -> m_buttonboardA.getRawButton(6));
   private final Trigger indexTrigger = new Trigger(() -> m_buttonboardA.getRawButton(5));
+  private final Command shootCommand;
+  private final Trigger intakeUp = new Trigger(() -> m_buttonboardA.getRawButton(15));
+  private final Trigger intakeDown = new Trigger(() -> m_buttonboardA.getRawButton(16));
   // private final Trigger left = new Trigger(() -> m_joystick.getRawButton(1));
   // private final Trigger right = new Trigger(() -> m_joystick.getRawButton(2));
 
@@ -82,7 +87,6 @@ public class RobotContainer {
       new File(Filesystem.getDeployDirectory(), "swerve"));
       m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement, m_drivetrain);
       // m_shooter = new Shooter(m_drivetrain, 0, 0);
-      
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
@@ -93,14 +97,30 @@ public class RobotContainer {
       0.072,
       0.0,
       0.0);
+    shootCommand = new ParallelCommandGroup (
+                Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)),
+                new SequentialCommandGroup(
+                    Commands.waitSeconds(1.2),
+                    Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE))
+                )
+            ).finallyDo((x)->{m_shooter.shooterMotor.set(0);});
+    shootCommand.addRequirements(m_shooter);
     // Configure the trigger bindings
     autoChooser = AutoBuilder.buildAutoChooser();
     // m_shootCommand = new ShootCommand(m_shooter,()-> m_buttonboardA.getRawButtonPressed(4), ()->m_buttonboardA.getRawButton(5), ()->0.0);
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    NamedCommands.registerCommand("Shoot", new ShootCommand(m_shooter, ()->true, ()-> false, ()-> 0.0, ()->false));
-    // sysRoutine = m_drivetrain.getSysIdCommand();
-        configureBindings();
+    NamedCommands.registerCommand("Shoot", Commands.runEnd(
+      ()->{}, 
+      ()->{}, 
+      m_shooter
+      ));
+    // // sysRoutine = m_drivetrain.getSysIdCommand();
+    //     configureBindings();
+
+    NamedCommands.registerCommand("Intake", Commands.run(()->{
+
+    }));
   }
 
   /** 
@@ -114,14 +134,13 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(driveCommand);
-    m_intake.setDefaultCommand(intakeCommand);
+    // m_intake.setDefaultCommand(intakeCommand);
     
     // jan  
     // m_shooter.setDefaultCommand(m_shootCommand);
     visionOnChanger.onTrue(Commands.runOnce(()-> {m_vision.visionOn=false;}, m_vision));
     visionOnChanger.onFalse(Commands.runOnce(()-> {m_vision.visionOn=true;}, m_vision));
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::resetEverything));
-    // navxResetButton.onTrue(Commands.runOnce(()-> m_drivetrain.swerveDrive.zeroGyro()));
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.SHOOT));
     alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
     trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
@@ -131,8 +150,25 @@ public class RobotContainer {
     indexTrigger.whileTrue(Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
     indexTrigger.whileFalse(Commands.run(() -> m_shooter.indexMotor.setVoltage(0)));
 
+    intakeUp.whileTrue(Commands.run(()->{                
+      m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(0));
+      m_intake.feederWheel.set(0);
+      }, m_intake));
+
+    intakeUp.whileFalse(Commands.run(()->{           
+      if(!m_buttonboardB.getRawButton(16)) {
+        m_intake.intakeMotor.setControl(new DutyCycleOut(m_intake.intakeMotor.getPosition().getValueAsDouble()));
+        m_intake.feederWheel.set(0);
+      }    
+      }, m_intake));
+
+    intakeDown.whileTrue(Commands.run(()->{                
+      m_intake.intakeMotor.setControl(new DutyCycleOut(0));
+      m_intake.feederWheel.set((Math.abs(m_intake.intakeMotor.getPosition().getValueAsDouble()-Constants.INTAKE_DOWN_POSITION)<.7?Constants.MAX_FLYWHEEL_VOLTAGE:0));
+      }, m_intake));
+
     swerveLockButton.whileTrue(Commands.run(() -> m_drivetrain.swerveDrive.lockPose()));
-    swerveLockButton.whileFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
+    swerveLockButton.onFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
 
     //FINISH THIS
 
@@ -161,6 +197,7 @@ public class RobotContainer {
   public void resetPose(){
     m_drivetrain.swerveDrive.resetOdometry(new Pose2d());
   }
+
   
   public void periodic(){
     // System.out.println(m_drivetrain.swerveDrive.getPose());

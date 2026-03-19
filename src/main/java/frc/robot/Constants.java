@@ -41,6 +41,6 @@ public final class Constants {
   public static Translation2d bluePassDown = new Translation2d(2.26666666667, 1.614);
   public static final double INTAKE_DOWN_POSITION = -5.9;
 
-  public static final double MAX_FLYWHEEL_VOLTAGE = 5;
+  public static final double MAX_FLYWHEEL_VOLTAGE = 12;
   public static final double MAX_INDEX_VOLTAGE = 8;
 }
