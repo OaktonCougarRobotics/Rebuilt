@@ -45,28 +45,33 @@ public class RobotContainer {
   public final Drivetrain m_drivetrain;
   public final Vision m_vision;
   public final Shooter m_shooter;
-  // public final Shooter m_shooter;
-  // public final ShootCommand m_shootCommand;
-  Intake m_intake = new Intake(30, 52, () -> robotState);
-    private final Joystick m_joystick = new Joystick(1);
-  // public Jank jank = new Jank(0,      () -> m_joystick.getRawButtonPressed(2),
-  //     () -> m_joystick.getRawButtonPressed(1));
+  public final Intake m_intake = new Intake(30, 52, () -> robotState);
+  // The robots joystick and buttonboards are defined here...
+  public final Joystick m_joystick = new Joystick(1);
   public final Joystick m_buttonboardA = new Joystick(0);
   public final Joystick m_buttonboardB = new Joystick(2);
+  // The different buttons on the joystick and buttonboards are defined here...
+
+  // Magic Buttons First:
+  public final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
+  public final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
+  public final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
+  public final Trigger intakeUp = new Trigger(() -> m_buttonboardA.getRawButton(15));
+  public final Trigger intakeDown = new Trigger(() -> m_buttonboardA.getRawButton(16));
+
+  // Manuals/Overrides here  
   public final Trigger visionOnChanger = new Trigger(() -> m_buttonboardB.getRawButton(2));
-  public final Command driveCommand;
-  private final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
-  private final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
-  private final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
+  public final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
+  public final Trigger flywheelTrigger = new Trigger(() -> m_buttonboardA.getRawButton(6));
+  public final Trigger indexTrigger = new Trigger(() -> m_buttonboardA.getRawButton(5));
+
+  
   public boolean isTrenchLock;
-  private final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
-  private final Trigger flywheelTrigger = new Trigger(() -> m_buttonboardA.getRawButton(6));
-  private final Trigger indexTrigger = new Trigger(() -> m_buttonboardA.getRawButton(5));
-  private final Command shootCommand;
-  private final Trigger intakeUp = new Trigger(() -> m_buttonboardA.getRawButton(15));
-  private final Trigger intakeDown = new Trigger(() -> m_buttonboardA.getRawButton(16));
+  
   // private final Trigger left = new Trigger(() -> m_joystick.getRawButton(1));
   // private final Trigger right = new Trigger(() -> m_joystick.getRawButton(2));
+  public final Command driveCommand;
+  private final Command shootCommand;
 
   private SendableChooser<Command> autoChooser;
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
@@ -102,7 +107,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Shoot", shootCommand);
     // // sysRoutine = m_drivetrain.getSysIdCommand();
-    //     configureBindings();
+        configureBindings();
 
     NamedCommands.registerCommand("Intake", Commands.run(()->{                
       m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(Constants.INTAKE_DOWN_POSITION));
@@ -121,16 +126,18 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(driveCommand);
-    
-    // jan  
-    // m_shooter.setDefaultCommand(m_shootCommand);
+    // Vision enable/disable
     visionOnChanger.onTrue(Commands.runOnce(()-> {m_vision.visionOn=false;}, m_vision));
     visionOnChanger.onFalse(Commands.runOnce(()-> {m_vision.visionOn=true;}, m_vision));
+    // Navx reset
     navxResetButton.onTrue(Commands.runOnce(m_drivetrain::resetEverything));
+    // Auto-Lock
     alignTrigger.whileTrue(Commands.runOnce(() -> robotState = RobotState.SHOOT));
     alignTrigger.whileFalse(Commands.runOnce(() -> robotState = RobotState.NEUTRAL));
-    // trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
-    // trenchLockButton.onFalse(Commands.runOnce(() ->{isTrenchLock = false;}, m_drivetrain ));
+    // Trench-Lock
+    trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
+    trenchLockButton.onFalse(Commands.runOnce(() ->{isTrenchLock = false;}, m_drivetrain ));
+    // 
     flywheelTrigger.whileTrue(Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)));
     flywheelTrigger.whileFalse(Commands.run(() -> m_shooter.shooterMotor.setVoltage(0)));
     indexTrigger.whileTrue(Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
@@ -140,21 +147,17 @@ public class RobotContainer {
       m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(0));
       m_intake.feederWheel.set(0);
       }, m_intake));
-
-    intakeUp.whileFalse(Commands.run(()->{           
-      if(!m_buttonboardB.getRawButton(16)) {
-        m_intake.intakeMotor.setControl(new DutyCycleOut(m_intake.intakeMotor.getPosition().getValueAsDouble()));
-        m_intake.feederWheel.set(0);
-      }    
-      }, m_intake));
+    intakeUp.and(intakeDown).whileFalse(Commands.run(()->{
+        m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(m_intake.intakeMotor.getPosition().getValueAsDouble()));
+        m_intake.feederWheel.set(0);},m_intake));
 
     intakeDown.whileTrue(Commands.run(()->{                
       m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(Constants.INTAKE_DOWN_POSITION));
       m_intake.feederWheel.set((Math.abs(m_intake.intakeMotor.getPosition().getValueAsDouble()-Constants.INTAKE_DOWN_POSITION)<.7?Constants.MAX_FLYWHEEL_VOLTAGE:0));
       }, m_intake));
 
-    // swerveLockButton.whileTrue(Commands.run(() -> m_drivetrain.swerveDrive.lockPose()));
-    // swerveLockButton.onFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
+    swerveLockButton.whileTrue(Commands.run(() -> m_drivetrain.swerveDrive.lockPose()));
+    swerveLockButton.onFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
 
     //FINISH THIS
 
