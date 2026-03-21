@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
         mm.MotionMagicAcceleration = 7;   // Reach top speed in 0.5 seconds
         mm.MotionMagicJerk = 0;         // S-Curve smoothing
         var slot0 = configs.Slot0;
-        slot0.kP = 1.4;     // An error of 2.5 rotations results in 12V output
+        slot0.kP = 3;     // An error of 2.5 rotations results in 12V output
         slot0.kV = 0.0;    // 1 rps requires 0.12V
         slot0.kS = 0.0;    // 0.25V to overcome static friction
 

@@ -11,6 +11,9 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.vision.Vision;
 
 import java.io.File;
+import java.util.function.DoubleSupplier;
+
+import org.opencv.core.TickMeter;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
@@ -52,21 +55,31 @@ public class RobotContainer {
   public final Joystick m_buttonboardB = new Joystick(2);
   // The different buttons on the joystick and buttonboards are defined here...
 
-  // Magic Buttons First:
-  public final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
-  public final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
-  public final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
-  public final Trigger intakeUp = new Trigger(() -> m_buttonboardA.getRawButton(15));
-  public final Trigger intakeDown = new Trigger(() -> m_buttonboardA.getRawButton(16));
+    // Magic Buttons First:
+    public final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
+    public final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
+    public final Trigger trenchLockButton = new Trigger(() -> m_joystick.getRawButton(4));
+    public final Trigger intakeUp = new Trigger(() -> m_buttonboardA.getRawButton(15));
+    public final Trigger intakeDown = new Trigger(() -> m_buttonboardA.getRawButton(16));
+    public final Trigger shooterTrigger = new Trigger(() ->m_buttonboardB.getRawButton(8));
+    // Manuals/Overrides here  
+      // Manual Intake
+      public final Trigger intakeNuke = new Trigger(()->m_buttonboardB.getRawButton(1));
+      public final Trigger manualIntakeMotorUp = new Trigger(() -> m_buttonboardA.getRawButton(11));
+      public final Trigger manualIntakeMotorDown = new Trigger(() -> m_buttonboardA.getRawButton(12));
+      public final Trigger manualFeederMotorIn = new Trigger(() -> m_buttonboardA.getRawButton(10));
+      public final Trigger manualFeederMotorOut = new Trigger(() -> m_buttonboardA.getRawButton(9));
 
-  // Manuals/Overrides here  
-  public final Trigger visionOnChanger = new Trigger(() -> m_buttonboardB.getRawButton(2));
-  public final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
-  public final Trigger flywheelTrigger = new Trigger(() -> m_buttonboardA.getRawButton(6));
-  public final Trigger indexTrigger = new Trigger(() -> m_buttonboardA.getRawButton(5));
+    public final Trigger visionOnChanger = new Trigger(() -> m_buttonboardB.getRawButton(2));
+    public final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
+      // Manual Shooter
+      public final Trigger shooterNuke = new Trigger(() -> m_buttonboardA.getRawButton(1));
+      public final DoubleSupplier flywheelDial = () -> m_buttonboardB.getRawAxis(6);
+      public final Trigger indexTrigger = new Trigger(() -> m_buttonboardA.getRawButton(5));
 
   
   public boolean isTrenchLock;
+  public boolean isShooterManual;
   
   // private final Trigger left = new Trigger(() -> m_joystick.getRawButton(1));
   // private final Trigger right = new Trigger(() -> m_joystick.getRawButton(2));
@@ -85,8 +98,8 @@ public class RobotContainer {
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> -1 * m_joystick.getRawAxis(1),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
-      () -> -1 * m_joystick.getRawAxis(0),// * (DriverStation.getAlliance().get()==Alliance.Blue && m_vision.visionOn?1:-1),
+      () -> -1 * m_joystick.getRawAxis(1) * (DriverStation.getAlliance().get()==Alliance.Red && m_vision.visionOn?-1:1),
+      () -> -1 * m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Red && m_vision.visionOn?-1:1),
       () -> -1 * m_joystick.getRawAxis(2),
       () -> isTrenchLock,
       0.072,
@@ -95,10 +108,10 @@ public class RobotContainer {
     shootCommand = new ParallelCommandGroup (
                 Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)),
                 new SequentialCommandGroup(
-                    Commands.waitSeconds(1.2),
+                    Commands.waitSeconds(1.5),//  TEST TS
                     Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE))
                 )
-            ).finallyDo((x)->{m_shooter.shooterMotor.set(0);});
+            ).finallyDo((x)->{m_shooter.shooterMotor.set(0); m_shooter.indexMotor.set(0);});
     shootCommand.addRequirements(m_shooter);
     // Configure the trigger bindings
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -138,16 +151,19 @@ public class RobotContainer {
     trenchLockButton.onTrue(Commands.runOnce(() ->{isTrenchLock = true;}, m_drivetrain));
     trenchLockButton.onFalse(Commands.runOnce(() ->{isTrenchLock = false;}, m_drivetrain ));
     // 
-    flywheelTrigger.whileTrue(Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)));
-    flywheelTrigger.whileFalse(Commands.run(() -> m_shooter.shooterMotor.setVoltage(0)));
+    // flywheelTrigger.whileTrue(Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)));
+    // flywheelTrigger.whileFalse(Commands.run(() -> m_shooter.shooterMotor.setVoltage(0)));
     indexTrigger.whileTrue(Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
     indexTrigger.whileFalse(Commands.run(() -> m_shooter.indexMotor.setVoltage(0)));
+
+    shooterNuke.onTrue(Commands.runOnce(()->{isShooterManual = true;}));
+    shooterNuke.onFalse(Commands.runOnce(()->{isShooterManual = false;}));
 
     intakeUp.whileTrue(Commands.run(()->{                
       m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(0));
       m_intake.feederWheel.set(0);
       }, m_intake));
-    intakeUp.and(intakeDown).whileFalse(Commands.run(()->{
+    intakeUp.or(intakeDown).whileFalse(Commands.run(()->{
         m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(m_intake.intakeMotor.getPosition().getValueAsDouble()));
         m_intake.feederWheel.set(0);},m_intake));
 
@@ -155,10 +171,10 @@ public class RobotContainer {
       m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(Constants.INTAKE_DOWN_POSITION));
       m_intake.feederWheel.set((Math.abs(m_intake.intakeMotor.getPosition().getValueAsDouble()-Constants.INTAKE_DOWN_POSITION)<.7?Constants.MAX_FLYWHEEL_VOLTAGE:0));
       }, m_intake));
-
+    shooterTrigger.whileTrue(shootCommand);
     swerveLockButton.whileTrue(Commands.run(() -> m_drivetrain.swerveDrive.lockPose()));
     swerveLockButton.onFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
-
+    
     //FINISH THIS
 
     // (new Trigger(()->m_buttonboardA.getRawButton(4))).whileTrue(new ShootCommand(m_shooter,()-> true, ()->false, ()->0.0, ()->true));
@@ -194,11 +210,17 @@ public class RobotContainer {
     // System.out.println("Angle: " + m_drivetrain.hubAngle());
     // System.out.println("X: " + m_drivetrain.swerveDrive.getPose().getX());
     // System.out.println("Y: " + m_drivetrain.swerveDrive.getPose().getY());
-    
+    SmartDashboard.putNumber("nodsjfodjfadf", m_intake.intakeMotor.getPosition().getValueAsDouble());
     // System.out.println(m_drivetrain.getHeadingError());
     // SmartDashboard.putNumber("rotation", m_shooter.getOrientationError());
     // SmartDashboard.putNumber("tangential", m_shooter.getTangentialVelocity());
     // SmartDashboard.putNumber("radial", m_shooter.getRadialVelocity());
+    if(isShooterManual){
+      // System.out.println(flywheelDial.getAsDouble());//*Constants.MAX_FLYWHEEL_VOLTAGE
+      m_shooter.shooterMotor.setVoltage(flywheelDial.getAsDouble()*Constants.MAX_FLYWHEEL_VOLTAGE);
+    } else {
+      m_shooter.shooterMotor.set(0);
+    }
     SmartDashboard.putNumber("Velocity", Math.sqrt(Math.pow(m_drivetrain.swerveDrive.getFieldVelocity().vxMetersPerSecond,2)+Math.pow(m_drivetrain.swerveDrive.getFieldVelocity().vyMetersPerSecond,2)));
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());

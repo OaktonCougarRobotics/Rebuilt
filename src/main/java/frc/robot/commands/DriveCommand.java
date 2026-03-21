@@ -58,11 +58,11 @@ public class DriveCommand extends Command{
     }
     @Override
     public void execute(){
-      System.out.println(thetaTranslationSupplier.getAsDouble());// not the problem
+      // System.out.println(thetaTranslationSupplier.getAsDouble());// not the problem
         drivetrain.swerveDrive.driveFieldOriented(new ChassisSpeeds(
 
             deadzone(xTranslationSupplier.getAsDouble(),0.05)
-              * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()),
+              * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()) ,
 
             deadzone(yTranslationSupplier.getAsDouble(),0.05)
               * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()),
