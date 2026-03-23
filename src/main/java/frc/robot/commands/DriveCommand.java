@@ -59,21 +59,25 @@ public class DriveCommand extends Command{
     @Override
     public void execute(){
       // System.out.println(thetaTranslationSupplier.getAsDouble());// not the problem
+      double joystickX = xTranslationSupplier.getAsDouble();
+      double joystickY = yTranslationSupplier.getAsDouble();
+      double joystickTheta = thetaTranslationSupplier.getAsDouble();
+      SmartDashboard.putNumber("joystick X reading", joystickX);
+      SmartDashboard.putNumber("joystick Y reading", joystickY);
+      SmartDashboard.putNumber("joystick T reading", joystickTheta);
         drivetrain.swerveDrive.driveFieldOriented(new ChassisSpeeds(
 
-            deadzone(xTranslationSupplier.getAsDouble(),0.05)
+            deadzone(joystickX,0.05)
               * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()) ,
 
-            deadzone(yTranslationSupplier.getAsDouble(),0.05)
+            deadzone(joystickY,0.05)
               * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()),
 
             (stateSupplier.get()==RobotState.SHOOT || isTrenchLockSupplier.get() ?
-            
-              
-              -echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * Math.abs(drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
-            ))
-            //, new Translation2d()
-        );
+                  -echo():
+                  deadzone(joystickTheta,0.05) * Math.abs(drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
+            )
+        ));
     }
     @Override
     public void end(boolean interrupted){

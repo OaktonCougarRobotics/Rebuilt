@@ -86,12 +86,12 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     m_robotContainer.periodic();
     // m_robotContainer.jank.periodic();
-    // for ( String x: m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().keySet()){
-      SmartDashboard.putNumber("FRIED", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontleft").getAbsoluteEncoder().getAbsolutePosition());
-    // }
+    for ( String x: m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().keySet()){
+      SmartDashboard.putNumber(x+"offset", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get(x).getAbsolutePosition());
+    }
 
       SmartDashboard.putNumber("hgfhgf", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontleft").getAbsolutePosition());
-  SmartDashboard.putNumber("baked", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontright").getAbsolutePosition());
+  // SmartDashboard.putNumber("baked", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontright").getAbsolutePosition());
 
   }
 

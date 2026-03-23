@@ -98,8 +98,8 @@ public class RobotContainer {
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> -1 * m_joystick.getRawAxis(1) * (DriverStation.getAlliance().get()==Alliance.Red && m_vision.visionOn?-1:1),
-      () -> -1 * m_joystick.getRawAxis(0) * (DriverStation.getAlliance().get()==Alliance.Red && m_vision.visionOn?-1:1),
+      () -> { boolean isBlue = DriverStation.getAlliance().get()==Alliance.Blue ;SmartDashboard.putBoolean("isBlue", isBlue); return -1 * m_joystick.getRawAxis(1) * (isBlue && m_vision.visionOn?-1:1);},
+      () -> { boolean isBlue = DriverStation.getAlliance().get()==Alliance.Blue ;SmartDashboard.putBoolean("isBlue", isBlue); return -1 * m_joystick.getRawAxis(0) * (isBlue && m_vision.visionOn?-1:1);},
       () -> -1 * m_joystick.getRawAxis(2),
       () -> isTrenchLock,
       0.072,
@@ -228,6 +228,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("X", m_drivetrain.swerveDrive.getPose().getX());
     SmartDashboard.putNumber("Y", m_drivetrain.swerveDrive.getPose().getY());
     SmartDashboard.putNumber("Z", m_drivetrain.swerveDrive.getPose().getRotation().getDegrees());
+    SmartDashboard.putNumber("Theta", m_drivetrain.swerveDrive.getYaw().getDegrees());
+    SmartDashboard.putBoolean("ShootMode", robotState==RobotState.SHOOT);
+    SmartDashboard.putBoolean("isTrenching", isTrenchLock);
   }
 
   public enum RobotState{
