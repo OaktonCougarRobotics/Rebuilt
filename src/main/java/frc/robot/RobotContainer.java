@@ -13,14 +13,13 @@ import frc.robot.subsystems.vision.Vision;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
-import org.opencv.core.TickMeter;
 
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -62,6 +61,7 @@ public class RobotContainer {
     public final Trigger intakeUp = new Trigger(() -> m_buttonboardA.getRawButton(15));
     public final Trigger intakeDown = new Trigger(() -> m_buttonboardA.getRawButton(16));
     public final Trigger shooterTrigger = new Trigger(() ->m_buttonboardB.getRawButton(8));
+    public final Trigger alignIntakeTrigger = new Trigger(() -> m_buttonboardA.getRawButton(2));
     // Manuals/Overrides here  
       // Manual Intake
       public final Trigger intakeNuke = new Trigger(()->m_buttonboardB.getRawButton(1));
@@ -85,10 +85,11 @@ public class RobotContainer {
   // private final Trigger right = new Trigger(() -> m_joystick.getRawButton(2));
   public final Command driveCommand;
   private final Command shootCommand;
-
+  double joystickDegree = 2.0;
   private SendableChooser<Command> autoChooser;
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
+    SmartDashboard.putNumber("Joystick Degree", 2.0);
     m_shooter = new Shooter(58, 36);
     m_buttonboardA.getRawButton(21);
     m_drivetrain = new Drivetrain(
@@ -98,8 +99,10 @@ public class RobotContainer {
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> { boolean isBlue = DriverStation.getAlliance().get()==Alliance.Blue ;SmartDashboard.putBoolean("isBlue", isBlue); return -1 * m_joystick.getRawAxis(1) * (isBlue && m_vision.visionOn?-1:1);},
-      () -> { boolean isBlue = DriverStation.getAlliance().get()==Alliance.Blue ;SmartDashboard.putBoolean("isBlue", isBlue); return -1 * m_joystick.getRawAxis(0) * (isBlue && m_vision.visionOn?-1:1);},
+      // () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * Math.abs(Math.pow(m_joystick.getRawAxis(1), joystickDegree)) * Math.signum(m_joystick.getRawAxis(1)) * (isRed && m_vision.visionOn?-1:1);},
+      // () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * Math.abs(Math.pow(m_joystick.getRawAxis(0), joystickDegree)) * Math.signum(m_joystick.getRawAxis(0)) * (isRed && m_vision.visionOn?-1:1);},
+      () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * m_joystick.getRawAxis(1) * (isRed && m_vision.visionOn?-1:1);},
+      () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * m_joystick.getRawAxis(0) * (isRed && m_vision.visionOn?-1:1);},
       () -> -1 * m_joystick.getRawAxis(2),
       () -> isTrenchLock,
       0.072,
@@ -175,6 +178,7 @@ public class RobotContainer {
     swerveLockButton.whileTrue(Commands.run(() -> m_drivetrain.swerveDrive.lockPose()));
     swerveLockButton.onFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
     
+    alignIntakeTrigger.onTrue(Commands.runOnce(()->m_intake.intakeMotor.setPosition(-5.9)));
     //FINISH THIS
 
     // (new Trigger(()->m_buttonboardA.getRawButton(4))).whileTrue(new ShootCommand(m_shooter,()-> true, ()->false, ()->0.0, ()->true));
@@ -203,8 +207,10 @@ public class RobotContainer {
     m_drivetrain.swerveDrive.resetOdometry(new Pose2d());
   }
 
-  
+  PIDController velocityController = new PIDController(5.5, 0, 0);
+
   public void periodic(){
+    joystickDegree = SmartDashboard.getNumber("Joystick Degree", joystickDegree);
     // System.out.println(m_drivetrain.swerveDrive.getPose());
     // System.out.println(m_drivetrain.orientationError());
     // System.out.println("Angle: " + m_drivetrain.hubAngle());
@@ -215,9 +221,11 @@ public class RobotContainer {
     // SmartDashboard.putNumber("rotation", m_shooter.getOrientationError());
     // SmartDashboard.putNumber("tangential", m_shooter.getTangentialVelocity());
     // SmartDashboard.putNumber("radial", m_shooter.getRadialVelocity());
+    SmartDashboard.putNumber("dial RPM",flywheelDial.getAsDouble());
+    SmartDashboard.putNumber("actual RPM", m_shooter.shooterMotor.getVelocity().getValueAsDouble());
     if(isShooterManual){
       // System.out.println(flywheelDial.getAsDouble());//*Constants.MAX_FLYWHEEL_VOLTAGE
-      m_shooter.shooterMotor.setVoltage(flywheelDial.getAsDouble()*Constants.MAX_FLYWHEEL_VOLTAGE);
+      m_shooter.shooterMotor.set(velocityController.calculate(m_shooter.shooterMotor.getVelocity().getValueAsDouble(), flywheelDial.getAsDouble()*200));
     } else {
       m_shooter.shooterMotor.set(0);
     }

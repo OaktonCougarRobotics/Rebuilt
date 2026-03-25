@@ -42,5 +42,6 @@ public final class Constants {
   public static final double INTAKE_DOWN_POSITION = -6.3;
 
   public static final double MAX_FLYWHEEL_VOLTAGE = 12;
+  public static final double MAX_FLYWHEEL_RPS = 300;
   public static final double MAX_INDEX_VOLTAGE = 8;
 }

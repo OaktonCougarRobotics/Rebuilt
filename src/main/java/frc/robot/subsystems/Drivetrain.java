@@ -101,12 +101,25 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("botx", x);
     double y = currentPose.getY();
     SmartDashboard.putNumber("boty", y);
-    if(DriverStation.getAlliance().get()==Alliance.Blue)
+    if(DriverStation.getAlliance().get()==Alliance.Blue){
+      SmartDashboard.putNumber("distance", Math.sqrt(Math.pow((x-Constants.blueHub.getX()),2) + Math.pow((y-Constants.blueHub.getY()),2)));
         return Math.sqrt(Math.pow((x-Constants.blueHub.getX()),2) + Math.pow((y-Constants.blueHub.getY()),2));
-    else
+    }
+        else{
+          SmartDashboard.putNumber("distance", Math.sqrt((x-Constants.redHub.getX())*(x-Constants.redHub.getX())+(y-Constants.redHub.getY())*(y-Constants.redHub.getY())));
       return Math.sqrt((x-Constants.redHub.getX())*(x-Constants.redHub.getX())+(y-Constants.redHub.getY())*(y-Constants.redHub.getY()));
-  }
-
+        }
+    }
+    public double distanceToRPM(){
+      double[] function = {9.08571,29.14286,-3.42857};//0th coeff, 1st, 2nd, etc
+      double distance = distance();
+      double sum = 0;
+      for(int i = 0;i < function.length; i++){
+        sum += function[i]*Math.pow(distance,i);
+      }
+      SmartDashboard.putNumber("regression Output", sum);
+      return sum;
+    }
    /**
      * Finds the error in orientation of the bot to the hub based on position and actual orientation
      * @param real the actual orientation of the bot IN DEGREES
