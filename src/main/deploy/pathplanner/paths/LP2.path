@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.768559666053921,
-        "y": 3.584106732536765
+        "x": 7.750759037990196,
+        "y": 4.4032295017616425
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.820314302287873,
-        "y": 2.134976917986123
+        "x": 7.782162032781862,
+        "y": 5.316267377068016
       },
       "isLocked": false,
-      "linkedName": "MR"
+      "linkedName": "LP1 end"
     },
     {
       "anchor": {
-        "x": 4.440156918687589,
-        "y": 0.5609700427960058
+        "x": 4.499919337852329,
+        "y": 7.4860967658547795
       },
       "prevControl": {
-        "x": 7.8559629101283885,
-        "y": 0.5868473609129818
+        "x": 7.915732984524388,
+        "y": 7.510943052592432
       },
       "nextControl": {
-        "x": 1.825822271883407,
-        "y": 0.5411644772899137
+        "x": 2.1566177906709556,
+        "y": 7.469051824831496
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 4.005990014169731
       },
       "prevControl": {
-        "x": 2.8663991613789,
-        "y": 3.048529243841628
+        "x": 3.366052916283701,
+        "y": 5.214837383195466
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SR"
+      "linkedName": "LP2 end"
     }
   ],
   "rotationTargets": [
@@ -69,7 +69,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": false
 }
