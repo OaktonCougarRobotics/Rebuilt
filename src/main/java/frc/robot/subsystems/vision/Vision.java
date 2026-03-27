@@ -15,7 +15,7 @@ import frc.robot.subsystems.Drivetrain;
 public final class Vision extends SubsystemBase {
     public Camera shutter;
     public Camera ardu;    
-    public boolean visionOn = false;
+    public boolean visionOn = true;
     BiConsumer<Pose2d, Double> updateDrivetrain;
     public Vision(BiConsumer<Pose2d, Double> updateDrivetrain){
         shutter = new Camera("Shutter623", new Transform3d(0.2632456, 0.2980182, 0.512445, new Rotation3d(0,Math.toRadians(-18.3),Math.toRadians(11))));

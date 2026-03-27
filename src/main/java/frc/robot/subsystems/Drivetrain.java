@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,7 +38,7 @@ public class Drivetrain extends SubsystemBase {
   public SwerveDrive swerveDrive;
   public SysIdRoutine routine;
   public final SwerveDrivePoseEstimator visionEstimator;
-
+  public Field2d field = new Field2d();
 
    /**
    * Drivetrain Subsystem. Controls movement of robot
@@ -220,8 +221,9 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     visionEstimator.updateWithTime(Timer.getFPGATimestamp(), swerveDrive.getOdometryHeading(), swerveDrive.getModulePositions());
-    SmartDashboard.putNumber("navxx reading", swerveDrive.getYaw().getDegrees());
-
+    // SmartDashboard.putNumber("navxx reading", swerveDrive.getYaw().getDegrees());
+    field.setRobotPose(visionEstimator.getEstimatedPosition());
+    SmartDashboard.putData( "Vision Estimated Field", field);
     SmartDashboard.putNumber("distance from hub", distance());
   }
 

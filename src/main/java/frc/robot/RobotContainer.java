@@ -16,6 +16,7 @@ import java.util.function.DoubleSupplier;
 
 
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -73,13 +74,15 @@ public class RobotContainer {
       public final Trigger manualIntakeMotorDown = new Trigger(() -> m_buttonboardA.getRawButton(12));
       public final Trigger manualFeederMotorIn = new Trigger(() -> m_buttonboardA.getRawButton(10));
       public final Trigger manualFeederMotorOut = new Trigger(() -> m_buttonboardA.getRawButton(9));
-
+      public final Trigger backwardIndexTrigger = new Trigger(()-> m_buttonboardA.getRawButton(6));
     public final Trigger visionOnChanger = new Trigger(() -> m_buttonboardB.getRawButton(2));
     public final Trigger navxResetButton = new Trigger(() -> m_joystick.getRawButton(3));
       // Manual Shooter
       public final Trigger shooterNuke = new Trigger(() -> m_buttonboardA.getRawButton(1));
       public final DoubleSupplier flywheelDial = () -> m_buttonboardB.getRawAxis(6);
       public final Trigger indexTrigger = new Trigger(() -> m_buttonboardA.getRawButton(5));
+
+  public final Trigger momoTrigger = new Trigger(() -> m_joystick.getRawButton(2));
 
   
   public boolean isTrenchLock;
@@ -126,7 +129,7 @@ public class RobotContainer {
     // m_shootCommand = new ShootCommand(m_shooter,()-> m_buttonboardA.getRawButtonPressed(4), ()->m_buttonboardA.getRawButton(5), ()->0.0);
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    NamedCommands.registerCommand("Shoot", shootCommand);
+    NamedCommands.registerCommand("Shoot", Commands.run(() -> m_shooter.shooterMotor.setControl(new VelocityVoltage(47.6))));
     // // sysRoutine = m_drivetrain.getSysIdCommand();
         configureBindings();
 
@@ -134,6 +137,8 @@ public class RobotContainer {
       m_intake.intakeMotor.setControl(new MotionMagicDutyCycle(Constants.INTAKE_DOWN_POSITION));
       m_intake.feederWheel.set((Math.abs(m_intake.intakeMotor.getPosition().getValueAsDouble()-Constants.INTAKE_DOWN_POSITION)<.7?Constants.MAX_FLYWHEEL_VOLTAGE:0));
       }, m_intake));
+
+    NamedCommands.registerCommand("Index", Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
   }
 
   /** 
@@ -147,6 +152,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(driveCommand);
+    backwardIndexTrigger.whileTrue(Commands.runOnce(()->m_shooter.indexMotor.setVoltage(-Constants.MAX_INDEX_VOLTAGE)));
+    backwardIndexTrigger.onFalse(Commands.runOnce(()->m_shooter.indexMotor.setVoltage(0)));
+
     // Vision enable/disable
     visionOnChanger.onTrue(Commands.runOnce(()-> {m_vision.visionOn=false;}, m_vision));
     visionOnChanger.onFalse(Commands.runOnce(()-> {m_vision.visionOn=true;}, m_vision));
@@ -162,7 +170,7 @@ public class RobotContainer {
     // flywheelTrigger.whileTrue(Commands.run(() -> m_shooter.shooterMotor.setVoltage(Constants.MAX_FLYWHEEL_VOLTAGE)));
     // flywheelTrigger.whileFalse(Commands.run(() -> m_shooter.shooterMotor.setVoltage(0)));
     indexTrigger.whileTrue(Commands.run(() -> m_shooter.indexMotor.setVoltage(Constants.MAX_INDEX_VOLTAGE)));
-    indexTrigger.whileFalse(Commands.run(() -> m_shooter.indexMotor.setVoltage(0)));
+    indexTrigger.onFalse(Commands.runOnce(() -> m_shooter.indexMotor.setVoltage(0)));
 
     shooterNuke.onTrue(Commands.runOnce(()->{isShooterManual = true;}));
     shooterNuke.onFalse(Commands.runOnce(()->{isShooterManual = false;}));
@@ -184,6 +192,9 @@ public class RobotContainer {
     swerveLockButton.onFalse(Commands.run(() -> driveCommand.execute(), m_drivetrain));
     
     alignIntakeTrigger.onTrue(Commands.runOnce(()->m_intake.intakeMotor.setPosition(-5.9)));
+
+    momoTrigger.whileTrue(Commands.run(() -> m_shooter.shooterMotor.setControl(new VelocityVoltage(48))));
+    momoTrigger.onFalse(Commands.run(() -> m_shooter.shooterMotor.setControl(new VelocityVoltage(0))));
     //FINISH THIS
 
     // (new Trigger(()->m_buttonboardA.getRawButton(4))).whileTrue(new ShootCommand(m_shooter,()-> true, ()->false, ()->0.0, ()->true));
