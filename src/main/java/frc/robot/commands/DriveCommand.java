@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -100,7 +99,7 @@ public class DriveCommand extends Command{
       // System.out.println("Calculated output: "+ x);
       return x;
       } else {// called trenchlock
-        double current = drivetrain.swerveDrive.getPose().getRotation().getDegrees();
+        double current = drivetrain.visionEstimator.getEstimatedPosition().getRotation().getDegrees();
         // System.out.println(current);
         if(Math.abs(current)<90) 
                   return -thetaController2.calculate(current, 0);

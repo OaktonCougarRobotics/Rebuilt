@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 // import javax.lang.model.util.ElementScanner14;
 
@@ -14,11 +15,14 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,6 +36,8 @@ public class Drivetrain extends SubsystemBase {
 
   public SwerveDrive swerveDrive;
   public SysIdRoutine routine;
+  public final SwerveDrivePoseEstimator visionEstimator;
+
 
    /**
    * Drivetrain Subsystem. Controls movement of robot
@@ -51,6 +57,8 @@ public class Drivetrain extends SubsystemBase {
       e.printStackTrace();
       throw new RuntimeException("File failed to be loaded");
     }
+    visionEstimator = new SwerveDrivePoseEstimator(swerveDrive.kinematics,swerveDrive.getOdometryHeading(), swerveDrive.getModulePositions(), swerveDrive.getPose());
+
     // swerveDrive.getModuleMap().get("frontleft").setAngle(0); // recomment when working
     configureAuto();
     Math.sqrt(Math.pow(swerveDrive.getRobotVelocity().vxMetersPerSecond,2)+Math.pow(swerveDrive.getRobotVelocity().vyMetersPerSecond,2));
@@ -96,7 +104,7 @@ public class Drivetrain extends SubsystemBase {
    * @return distance
    */
   public double distance(){
-    Pose2d currentPose = swerveDrive.getPose();
+    Pose2d currentPose = visionEstimator.getEstimatedPosition();
     double x = currentPose.getX();
     SmartDashboard.putNumber("botx", x);
     double y = currentPose.getY();
@@ -146,7 +154,7 @@ public class Drivetrain extends SubsystemBase {
     // TRY THIS METHOD
     public double getHeadingError() {
         Translation2d target = pickTarget();
-        Pose2d currentPose = swerveDrive.getPose();
+        Pose2d currentPose = visionEstimator.getEstimatedPosition();
 
         double dx = target.getX() - currentPose.getX();
         double dy = target.getY() - currentPose.getY();
@@ -162,7 +170,7 @@ public class Drivetrain extends SubsystemBase {
         return error;
     }
     public double hubAngle() {
-      Pose2d currentPose = swerveDrive.getPose();
+      Pose2d currentPose = visionEstimator.getEstimatedPosition();
       double x = currentPose.getX();
       double y = currentPose.getY();
       //Translation2d target
@@ -190,7 +198,7 @@ public class Drivetrain extends SubsystemBase {
       return vt;
     }
     public Translation2d pickTarget(){
-      Pose2d pose = swerveDrive.getPose();
+      Pose2d pose = visionEstimator.getEstimatedPosition();
       if(DriverStation.getAlliance().get()==Alliance.Red){
         if(pose.getX()>11.99) // red alliance and in alliance zone
           return Constants.redHub;
@@ -211,6 +219,8 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+    visionEstimator.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(swerveDrive.getGyroRotation3d().getAngle()), swerveDrive.getModulePositions());
+
     SmartDashboard.putNumber("distance from hub", distance());
   }
 

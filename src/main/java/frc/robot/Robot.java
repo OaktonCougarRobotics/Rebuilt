@@ -75,6 +75,9 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    m_robotContainer.m_shooter.indexMotor.set(0);
+    m_robotContainer.m_shooter.shooterMotor.set(0);
+    m_robotContainer.m_intake.feederWheel.set(0);
     // if(wasLastAuto && m_robotContainer.m_vision.visionOn){
 
     //   m_robotContainer.m_drivetrain.resetPose(m_robotContainer.m_vision.autoEstimator.getEstimatedPosition());

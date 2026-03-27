@@ -21,11 +21,15 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,7 +58,6 @@ public class RobotContainer {
   public final Joystick m_buttonboardA = new Joystick(0);
   public final Joystick m_buttonboardB = new Joystick(2);
   // The different buttons on the joystick and buttonboards are defined here...
-
     // Magic Buttons First:
     public final Trigger swerveLockButton = new Trigger(() -> m_joystick.getRawButton(1));
     public final Trigger alignTrigger = new Trigger(() -> m_joystick.getRawButton(6));
@@ -95,13 +98,14 @@ public class RobotContainer {
     m_buttonboardA.getRawButton(21);
     m_drivetrain = new Drivetrain(
       new File(Filesystem.getDeployDirectory(), "swerve"));
-      m_vision = new Vision(m_drivetrain.swerveDrive::addVisionMeasurement, m_drivetrain);
+
+      m_vision = new Vision(m_drivetrain.visionEstimator::addVisionMeasurement);
       // m_shooter = new Shooter(m_drivetrain, 0, 0);
     driveCommand = new DriveCommand(
       m_drivetrain,
       () -> robotState,
-      () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * Math.abs(Math.pow(m_joystick.getRawAxis(1), joystickDegree)) * Math.signum(m_joystick.getRawAxis(1)) * (isRed && m_vision.visionOn?-1:1);},
-      () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * Math.abs(Math.pow(m_joystick.getRawAxis(0), joystickDegree)) * Math.signum(m_joystick.getRawAxis(0)) * (isRed && m_vision.visionOn?-1:1);},
+      () -> {  return -1 * Math.abs(Math.pow(m_joystick.getRawAxis(1), joystickDegree)) * Math.signum(m_joystick.getRawAxis(1)) ;},
+      () -> {  return -1 * Math.abs(Math.pow(m_joystick.getRawAxis(0), joystickDegree)) * Math.signum(m_joystick.getRawAxis(0)) ;},
       // () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * m_joystick.getRawAxis(1) * (isRed && m_vision.visionOn?-1:1);},
       // () -> { boolean isRed = DriverStation.getAlliance().get()==Alliance.Red ;SmartDashboard.putBoolean("isRed", isRed); return -1 * m_joystick.getRawAxis(0) * (isRed && m_vision.visionOn?-1:1);},
       () -> -1 * m_joystick.getRawAxis(2),
