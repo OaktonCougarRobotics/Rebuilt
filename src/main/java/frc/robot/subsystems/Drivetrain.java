@@ -219,7 +219,8 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    visionEstimator.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(swerveDrive.getGyroRotation3d().getAngle()), swerveDrive.getModulePositions());
+    visionEstimator.updateWithTime(Timer.getFPGATimestamp(), swerveDrive.getOdometryHeading(), swerveDrive.getModulePositions());
+    SmartDashboard.putNumber("navxx reading", swerveDrive.getYaw().getDegrees());
 
     SmartDashboard.putNumber("distance from hub", distance());
   }
