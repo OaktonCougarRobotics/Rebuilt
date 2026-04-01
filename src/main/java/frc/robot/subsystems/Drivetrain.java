@@ -120,7 +120,8 @@ public class Drivetrain extends SubsystemBase {
         }
     }
     public double distanceToRPM(){
-      double[] function = {9.08571,29.14286,-3.42857};//0th coeff, 1st, 2nd, etc
+      double[] function = {33.37143, 9.48571};//0th coeff, 1st, 2nd, etc
+      // double distance = distance();
       double distance = distance();
       double sum = 0;
       for(int i = 0;i < function.length; i++){

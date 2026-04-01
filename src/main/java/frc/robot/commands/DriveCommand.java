@@ -20,7 +20,7 @@ public class DriveCommand extends Command{
     private DoubleSupplier yTranslationSupplier;
     private DoubleSupplier thetaTranslationSupplier;
     private PIDController thetaController;
-    private PIDController thetaController2;
+    private PIDController trenchLockController;
     private Supplier<RobotState> stateSupplier;
     private Supplier<Boolean> isTrenchLockSupplier;
     /**
@@ -48,7 +48,7 @@ public class DriveCommand extends Command{
         this.yTranslationSupplier = yTranslationSupplier;
         this.thetaTranslationSupplier = thetaTranslationSupplier;
         this.thetaController = new PIDController(kP, kI, kD);
-        this.thetaController2 = new PIDController(kP/3, kI, kD);
+        this.trenchLockController = new PIDController(kP, kI, kD);
         this.isTrenchLockSupplier = isTrenchLockSupplier; 
     }
     @Override
@@ -102,11 +102,11 @@ public class DriveCommand extends Command{
         double current = drivetrain.visionEstimator.getEstimatedPosition().getRotation().getDegrees();
         // System.out.println(current);
         if(Math.abs(current)<90) 
-                  return -thetaController2.calculate(current, 0);
+                  return -trenchLockController.calculate(current, 0);
         else if(current<-90)
-            return -thetaController2.calculate(current, -180);
+            return -trenchLockController.calculate(current, -180);
           else 
-            return -thetaController2.calculate(current, 180);
+            return -trenchLockController.calculate(current, 180);
 
         
         // double x =                                              thetaController.calculate(current);

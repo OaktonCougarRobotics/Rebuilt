@@ -15,7 +15,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Camera extends SubsystemBase{
+public class Camera {
     private final String name;
     private final PhotonCamera cam;
     private final PhotonPoseEstimator poseEstimator;
@@ -41,13 +41,13 @@ public class Camera extends SubsystemBase{
         }
         return readings;
     }
-    @Override
+    // @Override
     /** 
      * Periodically calls the estimatePose() method, ensuring constant updating of odometry.
      */
-    public void periodic(){
-    estimatePose();
-    }
+    // public void periodic(){
+    // estimatePose();
+    // }
     /** 
      * @return boolean value representing whether the camera is connected (i.e. the camera is sending data).
      */
