@@ -75,15 +75,27 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    if(wasLastAuto){
+    m_robotContainer.m_shooter.indexMotor.set(0);
+    m_robotContainer.m_shooter.shooterMotor.set(0);
+    m_robotContainer.m_intake.feederWheel.set(0);
+    // if(wasLastAuto && m_robotContainer.m_vision.visionOn){
 
-      m_robotContainer.m_drivetrain.resetPose(m_robotContainer.m_vision.autoEstimator.getEstimatedPosition());
-    }
+    //   m_robotContainer.m_drivetrain.resetPose(m_robotContainer.m_vision.autoEstimator.getEstimatedPosition());
+    // }
+    
   }
 
   @Override
   public void disabledPeriodic() {
     m_robotContainer.periodic();
+    // m_robotContainer.jank.periodic();
+    for ( String x: m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().keySet()){
+      SmartDashboard.putNumber(x+"offset", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get(x).getAbsolutePosition());
+    }
+
+      SmartDashboard.putNumber("hgfhgf", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontleft").getAbsolutePosition());
+  // SmartDashboard.putNumber("baked", m_robotContainer.m_drivetrain.swerveDrive.getModuleMap().get("frontright").getAbsolutePosition());
+
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -91,7 +103,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.resetPose();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    SmartDashboard.putString("Pose", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+    SmartDashboard.putString("Potato", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
 
     // schedule the autonomous command (example)
@@ -105,7 +118,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     wasLastAuto = true;
-    SmartDashboard.putString("Pose", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
+    SmartDashboard.putString("Potato", m_robotContainer.m_drivetrain.swerveDrive.getPose().toString());
 
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());
     // System.out.println(m_robotContainer.m_drivetrain.swerveDrive.getPose());

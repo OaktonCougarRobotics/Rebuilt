@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +20,9 @@ public class DriveCommand extends Command{
     private DoubleSupplier yTranslationSupplier;
     private DoubleSupplier thetaTranslationSupplier;
     private PIDController thetaController;
+    private PIDController trenchLockController;
     private Supplier<RobotState> stateSupplier;
+    private Supplier<Boolean> isTrenchLockSupplier;
     /**
      * Constructs a DriveCommand command
      * 
@@ -34,7 +35,8 @@ public class DriveCommand extends Command{
                         Supplier<RobotState> stateSupplier,
                         DoubleSupplier xTranslationSupplier, 
                         DoubleSupplier yTranslationSupplier, 
-                        DoubleSupplier thetaTranslationSupplier, 
+                        DoubleSupplier thetaTranslationSupplier,
+                        Supplier<Boolean> isTrenchLockSupplier,  
                         double kP,  
                         double kI, 
                         double kD
@@ -46,7 +48,8 @@ public class DriveCommand extends Command{
         this.yTranslationSupplier = yTranslationSupplier;
         this.thetaTranslationSupplier = thetaTranslationSupplier;
         this.thetaController = new PIDController(kP, kI, kD);
-        
+        this.trenchLockController = new PIDController(kP, kI, kD);
+        this.isTrenchLockSupplier = isTrenchLockSupplier; 
     }
     @Override
     public void initialize() {
@@ -54,20 +57,26 @@ public class DriveCommand extends Command{
     }
     @Override
     public void execute(){
+      // System.out.println(thetaTranslationSupplier.getAsDouble());// not the problem
+      double joystickX = xTranslationSupplier.getAsDouble();
+      double joystickY = yTranslationSupplier.getAsDouble();
+      double joystickTheta = thetaTranslationSupplier.getAsDouble();
+      SmartDashboard.putNumber("joystick X reading", joystickX);
+      SmartDashboard.putNumber("joystick Y reading", joystickY);
+      SmartDashboard.putNumber("joystick T reading", joystickTheta);
         drivetrain.swerveDrive.driveFieldOriented(new ChassisSpeeds(
 
-            deadzone(xTranslationSupplier.getAsDouble(),0.05)
-              * drivetrain.swerveDrive.getMaximumChassisVelocity(),
+            deadzone(joystickX,0.05)
+              * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()) ,
 
-            deadzone(yTranslationSupplier.getAsDouble(),0.05)
-              * drivetrain.swerveDrive.getMaximumChassisVelocity(),
+            deadzone(joystickY,0.05)
+              * Math.abs(drivetrain.swerveDrive.getMaximumChassisVelocity()),
 
-            (stateSupplier.get()==RobotState.OUTTAKE?
-            
-              echo():deadzone(thetaTranslationSupplier.getAsDouble(),0.05) * drivetrain.swerveDrive.getMaximumChassisAngularVelocity()
-            )),
-          new Translation2d()
-        );
+            (stateSupplier.get()==RobotState.SHOOT || isTrenchLockSupplier.get() ?
+                  -echo():
+                  deadzone(joystickTheta,0.05) * Math.abs(drivetrain.swerveDrive.getMaximumChassisAngularVelocity())
+            )
+        ));
     }
     @Override
     public void end(boolean interrupted){
@@ -79,14 +88,29 @@ public class DriveCommand extends Command{
         return false;
     }
     public double echo(){
+      if(stateSupplier.get()==RobotState.SHOOT){
       drivetrain.distance();
-      double a = drivetrain.orientationError();
+      double a = drivetrain.getHeadingError();
       SmartDashboard.putNumber("angle error: ", a);
       double x = thetaController.calculate(a,0);
-      // thetaController.enableContinuousInput(-180, 180); use this or not?
+      // thetaController.enableContinuousInput(0, 360); //
+    // use this or not?
       //minimum compensation for the PID loop?
       // System.out.println("Calculated output: "+ x);
       return x;
+      } else {// called trenchlock
+        double current = drivetrain.visionEstimator.getEstimatedPosition().getRotation().getDegrees();
+        // System.out.println(current);
+        if(Math.abs(current)<90) 
+                  return -trenchLockController.calculate(current, 0);
+        else if(current<-90)
+            return -trenchLockController.calculate(current, -180);
+          else 
+            return -trenchLockController.calculate(current, 180);
+
+        
+        // double x =                                              thetaController.calculate(current);
+      }
     }
     @Override
     public boolean runsWhenDisabled(){

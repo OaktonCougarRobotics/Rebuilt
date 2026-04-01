@@ -5,32 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 8.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "middle to depo"
+                  "pathName": "RP1"
                 }
               },
               {
@@ -45,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "depo to middle"
+            "pathName": "RP2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot2"
+            "name": "Shoot"
           }
         }
       ]
